@@ -4,18 +4,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:scribble/scribble.dart';
+import 'package:study_cards/models/card_model.dart';
+import 'package:study_cards/models/folder_model.dart';
 
 class AddCardPage extends StatefulWidget {
-  const AddCardPage({super.key});
+  FolderModel folder;
+  AddCardPage({super.key, required this.folder});
 
   @override
-  State<AddCardPage> createState() => _AddCardPageState();
+  State<AddCardPage> createState() => _AddCardPageState(folder);
 }
 
 class _AddCardPageState extends State<AddCardPage>
     with TickerProviderStateMixin {
   late ScribbleNotifier notifierFront;
   late ScribbleNotifier notifierBack;
+  late TextEditingController frontTextController = TextEditingController();
+  late TextEditingController backTextController = TextEditingController();
 
   bool eraseSelected = false;
 
@@ -26,6 +31,9 @@ class _AddCardPageState extends State<AddCardPage>
   AnimationStatus _status = AnimationStatus.dismissed;
 
   final recorder = FlutterSoundRecorder();
+  
+  FolderModel folder;
+  _AddCardPageState(this.folder);
 
   @override
   void initState() {
@@ -63,6 +71,7 @@ class _AddCardPageState extends State<AddCardPage>
               children: [
                 _changeCardSideButton(),
                 _showCard(),
+                _addCard(),
               ],
             ),
           ),
@@ -159,6 +168,7 @@ class _AddCardPageState extends State<AddCardPage>
           } else {
             eraseSelected = true;
             notifier.setEraser();
+            
           }
         }),
       ),
@@ -220,6 +230,7 @@ class _AddCardPageState extends State<AddCardPage>
           Column(
             children: [
               TextField(
+                controller: frontTextController,
                 maxLines: null,
               ),
               _toolBar(context, notifierFront),
@@ -238,9 +249,33 @@ class _AddCardPageState extends State<AddCardPage>
             notifier: notifierBack,
             drawPen: true,
           ),
-          _buildEraserButton(notifierBack)
+          Transform(
+            alignment: FractionalOffset.center,
+            transform: Matrix4.identity()
+              ..setEntry(2, 1, 0.0015)
+              ..rotateY(pi),
+            child: Column(
+              children: [
+                TextField(
+                  controller: backTextController,
+                  maxLines: null,
+                ),
+                _toolBar(context, notifierBack),
+              ],
+            ),
+          ),
         ],
       ),
     );
+  }
+  
+  _addCard() {
+    return ElevatedButton(
+      onPressed: () => setState(() {
+        folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text, frontNotifier: notifierFront, backNotifier: notifierBack));
+        Navigator.of(context).pop();
+      }),
+      child: Text("Add"),
+      );
   }
 }
