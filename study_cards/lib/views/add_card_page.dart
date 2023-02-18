@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
@@ -6,6 +7,8 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:scribble/scribble.dart';
 import 'package:study_cards/models/card_model.dart';
 import 'package:study_cards/models/folder_model.dart';
+import 'package:study_cards/views/folders_view.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AddCardPage extends StatefulWidget {
   FolderModel folder;
@@ -39,7 +42,6 @@ class _AddCardPageState extends State<AddCardPage>
   void initState() {
     notifierFront = ScribbleNotifier();
     notifierBack = ScribbleNotifier();
-    super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -51,6 +53,7 @@ class _AddCardPageState extends State<AddCardPage>
       ..addStatusListener((status) {
         _status = status;
       });
+    super.initState();
     //_initRecorder();
   }
 
@@ -78,6 +81,21 @@ class _AddCardPageState extends State<AddCardPage>
         ],
       ),
     );
+  }
+
+  Future<void> _saveImage(BuildContext context) async {
+    final image = await notifierFront.renderImage();
+
+    final directory = await getApplicationDocumentsDirectory();
+    File file = File("assets\\images\\${folder.name}\\${frontTextController.text}");
+    file.writeAsBytes(image.buffer.asUint8List()); 
+    
+
+    folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text, frontNotifier: notifierFront, backNotifier: notifierBack, frontImage: Image.memory(image.buffer.asUint8List())));
+    Navigator.of(context).pop();
+        Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => FolderPage(folder: folder),
+              ),);
   }
 
   Widget _showCard() {
@@ -272,8 +290,7 @@ class _AddCardPageState extends State<AddCardPage>
   _addCard() {
     return ElevatedButton(
       onPressed: () => setState(() {
-        folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text, frontNotifier: notifierFront, backNotifier: notifierBack));
-        Navigator.of(context).pop();
+        _saveImage(context);
       }),
       child: Text("Add"),
       );

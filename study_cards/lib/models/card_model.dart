@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
 
 class CardModel {
@@ -5,8 +6,13 @@ class CardModel {
   String backDescription;
   ScribbleNotifier frontNotifier;
   ScribbleNotifier backNotifier;
+  CardModel({required this.frontDescription, required this.backDescription, required this.frontNotifier, required this.backNotifier, required this.frontImage});
 
-  CardModel({required this.frontDescription, required this.backDescription, required this.frontNotifier, required this.backNotifier});
-
+  /*
+  Map toJson() => {
+    "frontDescription": frontDescription,
+    "backDescription": frontDescription,
+    "frontImage": 
+  };*/
 
 }
