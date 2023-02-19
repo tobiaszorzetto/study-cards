@@ -4,15 +4,16 @@ import 'package:scribble/scribble.dart';
 class CardModel {
   String frontDescription;
   String backDescription;
-  ScribbleNotifier frontNotifier;
-  ScribbleNotifier backNotifier;
-  CardModel({required this.frontDescription, required this.backDescription, required this.frontNotifier, required this.backNotifier, required this.frontImage});
+  CardModel({required this.frontDescription, required this.backDescription,});
 
-  /*
+  
   Map toJson() => {
     "frontDescription": frontDescription,
-    "backDescription": frontDescription,
-    "frontImage": 
-  };*/
+    "backDescription": backDescription,
+  };
+
+  factory CardModel.fromJson(dynamic json){
+    return CardModel(frontDescription: json["frontDescription"], backDescription: json["backDescription"]);
+  }
 
 }

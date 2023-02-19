@@ -91,7 +91,7 @@ class _AddCardPageState extends State<AddCardPage>
     file.writeAsBytes(image.buffer.asUint8List()); 
     
 
-    folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text, frontNotifier: notifierFront, backNotifier: notifierBack, frontImage: Image.memory(image.buffer.asUint8List())));
+    folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text));
     Navigator.of(context).pop();
         Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => FolderPage(folder: folder),

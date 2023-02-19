@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
+import 'package:study_cards/file_manager.dart';
 import 'package:study_cards/models/folder_model.dart';
 import 'package:study_cards/views/add_card_page.dart';
 
@@ -42,6 +43,14 @@ class _FolderPageState extends State<FolderPage> {
             
           }),
           ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: () => setState(() {
+              FileManager.instance.saveCards();                                         
+            }),
+          ),
+        ],
       ),
       body: SizedBox(
         child: Column(
@@ -142,7 +151,6 @@ class _FolderPageState extends State<FolderPage> {
   
   Future<void> _showCardDialog(BuildContext context,CardModel card) async {
     //final image = await  card.frontNotifier.renderImage();
-    card.frontNotifier.setAllowedPointersMode(ScribblePointerMode.penOnly);
   showDialog(
       context: context,
       builder: (context) => SizedBox(

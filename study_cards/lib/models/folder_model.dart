@@ -11,5 +11,24 @@ class FolderModel{
 
   FolderModel({required this.name, this.parentFolder});
 
-  
+  Map toJson() =>{
+    "name": name,
+    "parentFolder": parentFolder?.toJson(),
+    "subfolders": subFolders.map((e) => e.toJson()).toList(),
+    "cards": cards.map((e) => e.toJson()).toList()
+  };
+
+  factory FolderModel.fromJson(dynamic json){
+
+    var cardsObjsJson = json["cards"] as List;
+    List<CardModel> newCards = cardsObjsJson.map((e) => CardModel.fromJson(e)).toList();
+
+    var subfoldersObjsJson = json["subfolders"] as List;
+    List<FolderModel> newSubfolders = subfoldersObjsJson.map((e) => FolderModel.fromJson(e)).toList();
+
+    FolderModel newFolder = FolderModel(name: json["name"], parentFolder: json["parentFolder"]);
+    newFolder.cards = newCards;
+    newFolder.subFolders = newSubfolders;
+    return newFolder;
+  }
 }
