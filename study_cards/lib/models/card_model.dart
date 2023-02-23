@@ -1,12 +1,19 @@
+import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
 
 class CardModel {
   String frontDescription;
   String backDescription;
-  ScribbleNotifier frontNotifier;
-  ScribbleNotifier backNotifier;
+  CardModel({required this.frontDescription, required this.backDescription,});
 
-  CardModel({required this.frontDescription, required this.backDescription, required this.frontNotifier, required this.backNotifier});
+  
+  Map toJson() => {
+    "frontDescription": frontDescription,
+    "backDescription": backDescription,
+  };
 
+  factory CardModel.fromJson(dynamic json){
+    return CardModel(frontDescription: json["frontDescription"], backDescription: json["backDescription"]);
+  }
 
 }

@@ -1,11 +1,16 @@
+import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:scribble/scribble.dart';
+import 'package:study_cards/file_manager.dart';
 import 'package:study_cards/models/card_model.dart';
 import 'package:study_cards/models/folder_model.dart';
+import 'package:study_cards/views/folders_view.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AddCardPage extends StatefulWidget {
   FolderModel folder;
@@ -33,13 +38,20 @@ class _AddCardPageState extends State<AddCardPage>
   final recorder = FlutterSoundRecorder();
   
   FolderModel folder;
+
+  ByteData? imageFront;
+  ByteData? imageBack;
+
+  bool showImageBack = false; 
+  bool showImageFront = false; 
+
   _AddCardPageState(this.folder);
+  
 
   @override
   void initState() {
     notifierFront = ScribbleNotifier();
     notifierBack = ScribbleNotifier();
-    super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -51,6 +63,7 @@ class _AddCardPageState extends State<AddCardPage>
       ..addStatusListener((status) {
         _status = status;
       });
+    super.initState();
     //_initRecorder();
   }
 
@@ -58,8 +71,14 @@ class _AddCardPageState extends State<AddCardPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          //title: Text(widget.title),
-
+            title: Text("Add Card"),
+            leading: IconButton(
+                onPressed: () => setState(() {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => FolderPage(folder: folder),),);
+                }),
+                icon: Icon(Icons.arrow_back)
+              ),
           ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -99,54 +118,19 @@ class _AddCardPageState extends State<AddCardPage>
   Widget _changeCardSideButton() {
     return ElevatedButton.icon(
         onPressed: () {
+          _updateImage();
           if (_status == AnimationStatus.dismissed) {
             _controller.forward();
           } else {
             _controller.reverse();
           }
         },
-        icon: Icon(Icons.change_circle_outlined),
+        icon: const Icon(Icons.change_circle_outlined),
         label: _status == AnimationStatus.dismissed
-            ? Text("front")
-            : Text("back"));
+            ? const Text("front")
+            : const Text("back"));
   }
 
-  Future _initRecorder() async {
-    await recorder.openRecorder();
-  }
-
-  Future record() async {
-    await recorder.startRecorder(toFile: "audio");
-  }
-
-  Future stopRecording() async {
-    await recorder.stopRecorder();
-  }
-
-  Widget _buildRecordButton() {
-    return Padding(
-      padding: const EdgeInsets.all(4),
-      child: FloatingActionButton.small(
-        tooltip: "Erase",
-        elevation: eraseSelected ? 10 : 2,
-        shape: !eraseSelected
-            ? const CircleBorder()
-            : RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-        child: recorder.isRecording
-            ? const Icon(Icons.stop)
-            : const Icon(Icons.record_voice_over),
-        onPressed: () => setState(() {
-          if (recorder.isStopped) {
-            record();
-          } else {
-            stopRecording();
-          }
-        }),
-      ),
-    );
-  }
 
   Widget _buildEraserButton(ScribbleNotifier notifier) {
     return Padding(
@@ -223,9 +207,12 @@ class _AddCardPageState extends State<AddCardPage>
     return Card(
       child: Stack(
         children: [
-          Scribble(
-            notifier: notifierFront,
-            drawPen: true,
+          Visibility(
+            visible: showImageFront,
+            child: Scribble(
+              notifier: notifierFront,
+              drawPen: true,
+            ),
           ),
           Column(
             children: [
@@ -233,7 +220,16 @@ class _AddCardPageState extends State<AddCardPage>
                 controller: frontTextController,
                 maxLines: null,
               ),
-              _toolBar(context, notifierFront),
+              CheckboxListTile(
+                value: showImageFront, 
+                onChanged: (value) => setState(() {
+                  showImageFront = value!;
+                })
+              ),
+              Visibility(
+                visible: showImageFront,
+                child: _toolBar(context, notifierFront),
+              ),
             ],
           ),
         ],
@@ -245,9 +241,12 @@ class _AddCardPageState extends State<AddCardPage>
     return Card(
       child: Stack(
         children: [
-          Scribble(
-            notifier: notifierBack,
-            drawPen: true,
+          Visibility(
+            visible: showImageBack,
+            child: Scribble(
+              notifier: notifierBack,
+              drawPen: true,
+            ),
           ),
           Transform(
             alignment: FractionalOffset.center,
@@ -260,7 +259,16 @@ class _AddCardPageState extends State<AddCardPage>
                   controller: backTextController,
                   maxLines: null,
                 ),
-                _toolBar(context, notifierBack),
+                CheckboxListTile(
+                  value: showImageBack, 
+                  onChanged: (value) => setState(() {
+                    showImageBack = value!;
+                  })
+                ),
+                Visibility(
+                  visible: showImageBack,
+                  child: _toolBar(context, notifierBack)
+                ),
               ],
             ),
           ),
@@ -268,14 +276,45 @@ class _AddCardPageState extends State<AddCardPage>
       ),
     );
   }
+
+  Future<void> _saveImages() async {
+    await _updateImage();
+
+    if(imageFront != null && showImageFront){
+      File fileFront = File("assets\\images\\${folder.name}\\${frontTextController.text}0");
+      fileFront.writeAsBytes(imageFront!.buffer.asUint8List());  
+    }
+    if(imageBack != null && showImageBack){
+      File fileBack = File("assets\\images\\${folder.name}\\${frontTextController.text}1");
+      fileBack.writeAsBytes(imageBack!.buffer.asUint8List()); 
+    }
+
+  }
+
+  Future<void> _updateImage() async{
+    if (_status == AnimationStatus.dismissed) {
+      if(showImageFront){
+        imageFront = await notifierFront.renderImage();   
+      }
+    } else {
+      if(showImageBack){
+        imageBack = await notifierBack.renderImage();   
+      }
+    }
+  }
   
   _addCard() {
     return ElevatedButton(
       onPressed: () => setState(() {
-        folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text, frontNotifier: notifierFront, backNotifier: notifierBack));
+        _saveImages();
+        folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text));
         Navigator.of(context).pop();
+        Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => FolderPage(folder: folder),
+              ),);
+        FileManager.instance.saveCards();
       }),
-      child: Text("Add"),
+      child: const Text("Add"),
       );
   }
 }
