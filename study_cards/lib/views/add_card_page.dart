@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,12 @@ class _AddCardPageState extends State<AddCardPage>
   final recorder = FlutterSoundRecorder();
   
   FolderModel folder;
+
+  ByteData? imageFront;
+  ByteData? imageBack;
+
   _AddCardPageState(this.folder);
+  
 
   @override
   void initState() {
@@ -61,8 +67,14 @@ class _AddCardPageState extends State<AddCardPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          //title: Text(widget.title),
-
+            title: Text("Add Card"),
+            leading: IconButton(
+                onPressed: () => setState(() {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => FolderPage(folder: folder),),);
+                }),
+                icon: Icon(Icons.arrow_back)
+              ),
           ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -81,21 +93,6 @@ class _AddCardPageState extends State<AddCardPage>
         ],
       ),
     );
-  }
-
-  Future<void> _saveImage(BuildContext context) async {
-    final image = await notifierFront.renderImage();
-
-    final directory = await getApplicationDocumentsDirectory();
-    File file = File("assets\\images\\${folder.name}\\${frontTextController.text}");
-    file.writeAsBytes(image.buffer.asUint8List()); 
-    
-
-    folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text));
-    Navigator.of(context).pop();
-        Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => FolderPage(folder: folder),
-              ),);
   }
 
   Widget _showCard() {
@@ -117,54 +114,19 @@ class _AddCardPageState extends State<AddCardPage>
   Widget _changeCardSideButton() {
     return ElevatedButton.icon(
         onPressed: () {
+          _updateImage();
           if (_status == AnimationStatus.dismissed) {
             _controller.forward();
           } else {
             _controller.reverse();
           }
         },
-        icon: Icon(Icons.change_circle_outlined),
+        icon: const Icon(Icons.change_circle_outlined),
         label: _status == AnimationStatus.dismissed
-            ? Text("front")
-            : Text("back"));
+            ? const Text("front")
+            : const Text("back"));
   }
 
-  Future _initRecorder() async {
-    await recorder.openRecorder();
-  }
-
-  Future record() async {
-    await recorder.startRecorder(toFile: "audio");
-  }
-
-  Future stopRecording() async {
-    await recorder.stopRecorder();
-  }
-
-  Widget _buildRecordButton() {
-    return Padding(
-      padding: const EdgeInsets.all(4),
-      child: FloatingActionButton.small(
-        tooltip: "Erase",
-        elevation: eraseSelected ? 10 : 2,
-        shape: !eraseSelected
-            ? const CircleBorder()
-            : RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-        child: recorder.isRecording
-            ? const Icon(Icons.stop)
-            : const Icon(Icons.record_voice_over),
-        onPressed: () => setState(() {
-          if (recorder.isStopped) {
-            record();
-          } else {
-            stopRecording();
-          }
-        }),
-      ),
-    );
-  }
 
   Widget _buildEraserButton(ScribbleNotifier notifier) {
     return Padding(
@@ -286,11 +248,38 @@ class _AddCardPageState extends State<AddCardPage>
       ),
     );
   }
+
+  Future<void> _saveImages() async {
+    await _updateImage();
+
+    if(imageFront != null){
+      File fileFront = File("assets\\images\\${folder.name}\\${frontTextController.text}0");
+      fileFront.writeAsBytes(imageFront!.buffer.asUint8List());  
+    }
+    if(imageBack != null){
+      File fileBack = File("assets\\images\\${folder.name}\\${frontTextController.text}1");
+      fileBack.writeAsBytes(imageBack!.buffer.asUint8List()); 
+    }
+
+  }
+
+  Future<void> _updateImage() async{
+    if (_status == AnimationStatus.dismissed) {
+      imageFront = await notifierFront.renderImage();   
+    } else {
+      imageBack = await notifierBack.renderImage();   
+    }
+  }
   
   _addCard() {
     return ElevatedButton(
       onPressed: () => setState(() {
-        _saveImage(context);
+        _saveImages();
+        folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text));
+        Navigator.of(context).pop();
+        Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => FolderPage(folder: folder),
+              ),);
       }),
       child: Text("Add"),
       );

@@ -36,4 +36,12 @@ class FileManager {
       }
     }
   }
+
+  Future<void> getFiles() async{
+    List<FileSystemEntity> files = Directory("assets\\images\\General").listSync(); 
+    print(files);
+    files[0].delete();
+    print(files);
+    
+  }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
+import 'package:study_cards/controllers/folder_controller.dart';
 import 'package:study_cards/file_manager.dart';
 import 'package:study_cards/models/folder_model.dart';
 import 'package:study_cards/views/add_card_page.dart';
@@ -48,6 +49,7 @@ class _FolderPageState extends State<FolderPage> {
             icon: Icon(Icons.save),
             onPressed: () => setState(() {
               FileManager.instance.saveCards();                                         
+              FileManager.instance.getFiles();                                         
             }),
           ),
         ],
@@ -65,7 +67,7 @@ class _FolderPageState extends State<FolderPage> {
             _showCards(context),
           ],
         ),
-      ),
+      ), 
     );
   }
 
@@ -150,24 +152,66 @@ class _FolderPageState extends State<FolderPage> {
   
   
   Future<void> _showCardDialog(BuildContext context,CardModel card) async {
+  File fileFront = File("assets\\images\\${folder.name}\\${card.frontDescription}0");
+  bool fileFrontExists = await fileFront.exists(); 
+  File fileBack = File("assets\\images\\${folder.name}\\${card.frontDescription}1");
+  bool fileBackExists = await fileBack.exists(); 
     //final image = await  card.frontNotifier.renderImage();
-  showDialog(
+  // ignore: use_build_context_synchronously
+  await showDialog(
       context: context,
       builder: (context) => SizedBox(
         child: AlertDialog(
-          content: Column(
-            children: [
-              Text(card.frontDescription),
-              SizedBox(
-                height: MediaQuery.of(context).size.height / 2,
-                width: MediaQuery.of(context).size.width / 2,
-                child: Image.file(File("assets\\images\\${folder.name}\\${card.frontDescription}")),
-              )
-            ],
+          content: StatefulBuilder(
+            builder: (context,setState) =>
+            Column(
+              children: [
+                Text(card.frontDescription),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 2,
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: _showCardInDialog(fileFrontExists, fileFront, card),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() {
+                    FolderController.instance.showBack = !FolderController.instance.showBack;
+                  }), 
+                  child: const Text("Show Back")
+                  ),
+                Expanded(
+                  child: Visibility(
+                    visible: FolderController.instance.showBack,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height / 2,
+                      width: MediaQuery.of(context).size.width / 2,
+                      child: _showCardInDialog(fileBackExists, fileBack, card),
+                      ),
+                    ),
+                ),
+              ],
+            ),
           ),
         ),
       )
     );
+  }
+
+  Widget _showCardInDialog(bool fileExists, File file, CardModel card){
+    if (fileExists){
+      return Column(
+        children: [
+          Text(card.backDescription),
+          Expanded(child: Image.file(file)),
+        ],
+      );
+    }
+    print("a");
+    return Text(card.backDescription);
+  }
+
+  Future<Image?> _showImage(File file) async{
+    
+    return null;
   }
   
   _showCards(BuildContext context) {
@@ -181,7 +225,10 @@ class _FolderPageState extends State<FolderPage> {
                     itemBuilder: (buildContext, index) {
                       return ListTile(
                         title: Text(folder.cards[index].frontDescription),
-                        onTap: () => _showCardDialog(context, folder.cards[index]),
+                        onTap: () {
+                          FolderController.instance.showBack = false;
+                          _showCardDialog(context, folder.cards[index]);
+                        },
                       );
                     }
                     ),
