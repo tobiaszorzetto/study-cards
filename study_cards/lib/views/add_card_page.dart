@@ -41,6 +41,9 @@ class _AddCardPageState extends State<AddCardPage>
   ByteData? imageFront;
   ByteData? imageBack;
 
+  bool showImageBack = false; 
+  bool showImageFront = false; 
+
   _AddCardPageState(this.folder);
   
 
@@ -203,9 +206,12 @@ class _AddCardPageState extends State<AddCardPage>
     return Card(
       child: Stack(
         children: [
-          Scribble(
-            notifier: notifierFront,
-            drawPen: true,
+          Visibility(
+            visible: showImageFront,
+            child: Scribble(
+              notifier: notifierFront,
+              drawPen: true,
+            ),
           ),
           Column(
             children: [
@@ -213,7 +219,16 @@ class _AddCardPageState extends State<AddCardPage>
                 controller: frontTextController,
                 maxLines: null,
               ),
-              _toolBar(context, notifierFront),
+              CheckboxListTile(
+                value: showImageFront, 
+                onChanged: (value) => setState(() {
+                  showImageFront = value!;
+                })
+              ),
+              Visibility(
+                visible: showImageFront,
+                child: _toolBar(context, notifierFront),
+              ),
             ],
           ),
         ],
@@ -225,9 +240,12 @@ class _AddCardPageState extends State<AddCardPage>
     return Card(
       child: Stack(
         children: [
-          Scribble(
-            notifier: notifierBack,
-            drawPen: true,
+          Visibility(
+            visible: showImageBack,
+            child: Scribble(
+              notifier: notifierBack,
+              drawPen: true,
+            ),
           ),
           Transform(
             alignment: FractionalOffset.center,
@@ -240,7 +258,16 @@ class _AddCardPageState extends State<AddCardPage>
                   controller: backTextController,
                   maxLines: null,
                 ),
-                _toolBar(context, notifierBack),
+                CheckboxListTile(
+                  value: showImageBack, 
+                  onChanged: (value) => setState(() {
+                    showImageBack = value!;
+                  })
+                ),
+                Visibility(
+                  visible: showImageBack,
+                  child: _toolBar(context, notifierBack)
+                ),
               ],
             ),
           ),
@@ -252,11 +279,11 @@ class _AddCardPageState extends State<AddCardPage>
   Future<void> _saveImages() async {
     await _updateImage();
 
-    if(imageFront != null){
+    if(imageFront != null && showImageFront){
       File fileFront = File("assets\\images\\${folder.name}\\${frontTextController.text}0");
       fileFront.writeAsBytes(imageFront!.buffer.asUint8List());  
     }
-    if(imageBack != null){
+    if(imageBack != null && showImageBack){
       File fileBack = File("assets\\images\\${folder.name}\\${frontTextController.text}1");
       fileBack.writeAsBytes(imageBack!.buffer.asUint8List()); 
     }
@@ -265,9 +292,13 @@ class _AddCardPageState extends State<AddCardPage>
 
   Future<void> _updateImage() async{
     if (_status == AnimationStatus.dismissed) {
-      imageFront = await notifierFront.renderImage();   
+      if(showImageFront){
+        imageFront = await notifierFront.renderImage();   
+      }
     } else {
-      imageBack = await notifierBack.renderImage();   
+      if(showImageBack){
+        imageBack = await notifierBack.renderImage();   
+      }
     }
   }
   
