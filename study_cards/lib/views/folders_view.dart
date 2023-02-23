@@ -141,9 +141,7 @@ class _FolderPageState extends State<FolderPage> {
                             builder: (context) => FolderPage(folder: folder.subFolders[index]),
                           )); 
                         }),
-                        onLongPress: () => setState(() {
-                          
-                        }),
+                        trailing: IconButton(onPressed: () => _showDeleteFolderDialog(index), icon: const Icon(Icons.delete)),
                       );
                     }
                     ),
@@ -154,9 +152,10 @@ class _FolderPageState extends State<FolderPage> {
   
   
   Future<void> _showCardDialog(BuildContext context,CardModel card) async {
-  File fileFront = File("assets\\images\\${folder.name}\\${card.frontDescription}0");
+    String folderPath = FileManager.instance.getFolderImagePath(folder);
+  File fileFront = File("$folderPath\\${card.frontDescription}0");
   bool fileFrontExists = await fileFront.exists(); 
-  File fileBack = File("assets\\images\\${folder.name}\\${card.frontDescription}1");
+  File fileBack = File("$folderPath\\${card.frontDescription}1");
   bool fileBackExists = await fileBack.exists(); 
     //final image = await  card.frontNotifier.renderImage();
   // ignore: use_build_context_synchronously
@@ -211,7 +210,7 @@ class _FolderPageState extends State<FolderPage> {
   }
 
 
-  Future<void> _deleteImages(CardModel card) async{
+  Future<void> _deleteImages(CardModel card, FolderModel folder) async{
     String folderPath = FileManager.instance.getFolderImagePath(folder);
     File file0 = File("$folderPath\\${card.frontDescription}0");
     File file1 = File("$folderPath\\${card.frontDescription}1");
@@ -221,6 +220,17 @@ class _FolderPageState extends State<FolderPage> {
     if(await file1.exists()){
       file1.delete();
     }
+  }
+
+  Future<void> _deleteFolder(FolderModel folderDeleted) async{
+    for (FolderModel subfolder in folderDeleted.subFolders){
+      await _deleteFolder(subfolder);
+    }
+    for(CardModel card in folderDeleted.cards){
+      await _deleteImages(card, folderDeleted);
+    }
+    await Directory(FileManager.instance.getFolderImagePath(folderDeleted)).delete();
+
   }
 
   _showDeleteCardDialog(int cardIndex){
@@ -237,8 +247,36 @@ class _FolderPageState extends State<FolderPage> {
             ElevatedButton(
               onPressed: () => setState(() {
                 Navigator.of(context).pop();
-                _deleteImages(folder.cards[cardIndex]);
+                _deleteImages(folder.cards[cardIndex], folder);
                 folder.cards.remove(folder.cards[cardIndex]);
+                FileManager.instance.saveCards();
+              }), 
+              child: Text("OK")
+            ),
+          ],
+        ),
+      )
+      
+    );
+  }
+
+
+  _showDeleteFolderDialog(int folderIndex){
+    showDialog(
+      context: context,
+      builder: (context) => SizedBox(
+        child: AlertDialog(
+          content: StatefulBuilder(
+            builder: (context,setState) =>
+            Text("Do you want to delete this folder?")
+          ),
+          actions: [
+            ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: Text("Cancel")),
+            ElevatedButton(
+              onPressed: () => setState(() {
+                Navigator.of(context).pop();
+                _deleteFolder(folder.subFolders[folderIndex]);
+                folder.subFolders.remove(folder.subFolders[folderIndex]);
                 FileManager.instance.saveCards();
               }), 
               child: Text("OK")
