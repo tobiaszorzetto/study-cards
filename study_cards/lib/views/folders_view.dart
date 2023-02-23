@@ -205,13 +205,19 @@ class _FolderPageState extends State<FolderPage> {
         ],
       );
     }
-    print("a");
     return Text(text);
   }
 
-  Future<Image?> _showImage(File file) async{
-    
-    return null;
+
+  Future<void> _deleteImages(CardModel card) async{
+    File file0 = File("assets\\images\\${folder.name}\\${card.frontDescription}0");
+    File file1 = File("assets\\images\\${folder.name}\\${card.frontDescription}1");
+    if(await file0.exists()){
+      file0.delete();
+    }
+    if(await file1.exists()){
+      file1.delete();
+    }
   }
 
   _showDeleteCardDialog(int cardIndex){
@@ -228,6 +234,7 @@ class _FolderPageState extends State<FolderPage> {
             ElevatedButton(
               onPressed: () => setState(() {
                 Navigator.of(context).pop();
+                _deleteImages(folder.cards[cardIndex]);
                 folder.cards.remove(folder.cards[cardIndex]);
                 FileManager.instance.saveCards();
               }), 
