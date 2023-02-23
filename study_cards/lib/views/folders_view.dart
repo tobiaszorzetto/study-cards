@@ -170,7 +170,7 @@ class _FolderPageState extends State<FolderPage> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 2,
                   width: MediaQuery.of(context).size.width / 2,
-                  child: _showCardInDialog(fileFrontExists, fileFront, card),
+                  child: _showCardInDialog(fileFrontExists, fileFront, card, card.frontDescription),
                 ),
                 ElevatedButton(
                   onPressed: () => setState(() {
@@ -184,7 +184,7 @@ class _FolderPageState extends State<FolderPage> {
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height / 2,
                       width: MediaQuery.of(context).size.width / 2,
-                      child: _showCardInDialog(fileBackExists, fileBack, card),
+                      child: _showCardInDialog(fileBackExists, fileBack, card, card.backDescription),
                       ),
                     ),
                 ),
@@ -196,22 +196,48 @@ class _FolderPageState extends State<FolderPage> {
     );
   }
 
-  Widget _showCardInDialog(bool fileExists, File file, CardModel card){
+  Widget _showCardInDialog(bool fileExists, File file, CardModel card, String text){
     if (fileExists){
       return Column(
         children: [
-          Text(card.backDescription),
+          Text(text),
           Expanded(child: Image.file(file)),
         ],
       );
     }
     print("a");
-    return Text(card.backDescription);
+    return Text(text);
   }
 
   Future<Image?> _showImage(File file) async{
     
     return null;
+  }
+
+  _showDeleteCardDialog(int cardIndex){
+    showDialog(
+      context: context,
+      builder: (context) => SizedBox(
+        child: AlertDialog(
+          content: StatefulBuilder(
+            builder: (context,setState) =>
+            Text("Do you want to delete this card?")
+          ),
+          actions: [
+            ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: Text("Cancel")),
+            ElevatedButton(
+              onPressed: () => setState(() {
+                Navigator.of(context).pop();
+                folder.cards.remove(folder.cards[cardIndex]);
+                FileManager.instance.saveCards();
+              }), 
+              child: Text("OK")
+            ),
+          ],
+        ),
+      )
+      
+    );
   }
   
   _showCards(BuildContext context) {
@@ -225,6 +251,10 @@ class _FolderPageState extends State<FolderPage> {
                     itemBuilder: (buildContext, index) {
                       return ListTile(
                         title: Text(folder.cards[index].frontDescription),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _showDeleteCardDialog(index),
+                        ),
                         onTap: () {
                           FolderController.instance.showBack = false;
                           _showCardDialog(context, folder.cards[index]);
