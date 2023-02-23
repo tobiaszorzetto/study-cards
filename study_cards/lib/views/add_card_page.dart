@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:scribble/scribble.dart';
+import 'package:study_cards/file_manager.dart';
 import 'package:study_cards/models/card_model.dart';
 import 'package:study_cards/models/folder_model.dart';
 import 'package:study_cards/views/folders_view.dart';
@@ -311,8 +312,9 @@ class _AddCardPageState extends State<AddCardPage>
         Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => FolderPage(folder: folder),
               ),);
+        FileManager.instance.saveCards();
       }),
-      child: Text("Add"),
+      child: const Text("Add"),
       );
   }
 }
