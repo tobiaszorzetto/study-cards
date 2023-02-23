@@ -277,15 +277,22 @@ class _AddCardPageState extends State<AddCardPage>
     );
   }
 
+  String _getStringFolder(FolderModel folder){
+    if(folder.parentFolder == null){
+      return "";
+    }
+    return "${_getStringFolder(folder.parentFolder!)}\\${folder.name}";
+  }
+
   Future<void> _saveImages() async {
     await _updateImage();
 
     if(imageFront != null && showImageFront){
-      File fileFront = File("assets\\images\\${folder.name}\\${frontTextController.text}0");
+      File fileFront = File("assets\\images${_getStringFolder(folder)}\\${frontTextController.text}0");
       fileFront.writeAsBytes(imageFront!.buffer.asUint8List());  
     }
     if(imageBack != null && showImageBack){
-      File fileBack = File("assets\\images\\${folder.name}\\${frontTextController.text}1");
+      File fileBack = File("assets\\images${_getStringFolder(folder)}\\${frontTextController.text}1");
       fileBack.writeAsBytes(imageBack!.buffer.asUint8List()); 
     }
 
