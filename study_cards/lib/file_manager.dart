@@ -17,7 +17,8 @@ class FileManager {
   Future<void> saveCards() async {
     final path = await getPath(); 
     final file = File("$path\\study-cards");
-    var jsonCards = jsonEncode(FolderModel.instance.toJson());
+    var jsonFolder = FolderModel.instance.toJson();
+    var jsonCards = jsonEncode(jsonFolder);
     await file.writeAsString(jsonCards);
   }
 
@@ -29,7 +30,7 @@ class FileManager {
       try {
         String fileContent = await file.readAsString();
         var cardsMap = jsonDecode(fileContent);
-        FolderModel.instance = FolderModel.fromJson(cardsMap);
+        FolderModel.instance = FolderModel.fromJson(cardsMap, null);
         
       } catch (e) {
         print(e);
@@ -37,11 +38,4 @@ class FileManager {
     }
   }
 
-  Future<void> getFiles() async{
-    List<FileSystemEntity> files = Directory("assets\\images\\General").listSync(); 
-    print(files);
-    files[0].delete();
-    print(files);
-    
-  }
 }

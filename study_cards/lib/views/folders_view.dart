@@ -48,8 +48,7 @@ class _FolderPageState extends State<FolderPage> {
           IconButton(
             icon: Icon(Icons.save),
             onPressed: () => setState(() {
-              FileManager.instance.saveCards();                                         
-              FileManager.instance.getFiles();                                         
+              FileManager.instance.saveCards();                                                                                 
             }),
           ),
         ],
@@ -113,6 +112,7 @@ class _FolderPageState extends State<FolderPage> {
                 folder.subFolders.add(FolderModel(name: folderName,parentFolder: folder));
                 Directory("assets\\images\\${folderName}").create();
                 Navigator.of(context).pop();
+                FileManager.instance.saveCards();
               }),
               child: const Text("Add"),
             )
