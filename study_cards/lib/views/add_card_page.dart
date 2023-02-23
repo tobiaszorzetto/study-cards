@@ -288,11 +288,11 @@ class _AddCardPageState extends State<AddCardPage>
     await _updateImage();
 
     if(imageFront != null && showImageFront){
-      File fileFront = File("assets\\images${_getStringFolder(folder)}\\${frontTextController.text}0");
+      File fileFront = File("${FileManager.instance.getFolderImagePath(folder)}\\${frontTextController.text}0");
       fileFront.writeAsBytes(imageFront!.buffer.asUint8List());  
     }
     if(imageBack != null && showImageBack){
-      File fileBack = File("assets\\images${_getStringFolder(folder)}\\${frontTextController.text}1");
+      File fileBack = File("${FileManager.instance.getFolderImagePath(folder)}\\${frontTextController.text}1");
       fileBack.writeAsBytes(imageBack!.buffer.asUint8List()); 
     }
 

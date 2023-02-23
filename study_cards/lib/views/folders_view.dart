@@ -109,8 +109,10 @@ class _FolderPageState extends State<FolderPage> {
       actions: [
         ElevatedButton(
               onPressed: () => setState(() {
-                folder.subFolders.add(FolderModel(name: folderName,parentFolder: folder));
-                Directory("assets\\images\\${folderName}").create();
+                FolderModel newSubFolder = FolderModel(name: folderName,parentFolder: folder);
+                folder.subFolders.add(newSubFolder);
+                print(FileManager.instance.getFolderImagePath(newSubFolder));
+                Directory("${FileManager.instance.getFolderImagePath(newSubFolder)}").create();
                 Navigator.of(context).pop();
                 FileManager.instance.saveCards();
               }),
@@ -210,8 +212,9 @@ class _FolderPageState extends State<FolderPage> {
 
 
   Future<void> _deleteImages(CardModel card) async{
-    File file0 = File("assets\\images\\${folder.name}\\${card.frontDescription}0");
-    File file1 = File("assets\\images\\${folder.name}\\${card.frontDescription}1");
+    String folderPath = FileManager.instance.getFolderImagePath(folder);
+    File file0 = File("$folderPath\\${card.frontDescription}0");
+    File file1 = File("$folderPath\\${card.frontDescription}1");
     if(await file0.exists()){
       file0.delete();
     }

@@ -38,11 +38,11 @@ class FileManager {
     }
   }
 
-  String getFolderImagePath(FolderModel folder){
-    if(folder.parentFolder == null){
-      return 'assets\\images';
+  String getFolderImagePath(FolderModel? folder){
+    if(folder == null){
+      return 'assets\\images\\';
     } else{
-      return "${getFolderImagePath(folder.parentFolder!)}\\${folder.name}";
+      return "${getFolderImagePath(folder.parentFolder)}\\${folder.name}";
     }
   }
 
