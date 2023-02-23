@@ -48,8 +48,7 @@ class _FolderPageState extends State<FolderPage> {
           IconButton(
             icon: Icon(Icons.save),
             onPressed: () => setState(() {
-              FileManager.instance.saveCards();                                         
-              FileManager.instance.getFiles();                                         
+              FileManager.instance.saveCards();                                                                                 
             }),
           ),
         ],
@@ -110,9 +109,12 @@ class _FolderPageState extends State<FolderPage> {
       actions: [
         ElevatedButton(
               onPressed: () => setState(() {
-                folder.subFolders.add(FolderModel(name: folderName,parentFolder: folder));
-                Directory("assets\\images\\${folderName}").create();
+                FolderModel newSubFolder = FolderModel(name: folderName,parentFolder: folder);
+                folder.subFolders.add(newSubFolder);
+                print(FileManager.instance.getFolderImagePath(newSubFolder));
+                Directory("${FileManager.instance.getFolderImagePath(newSubFolder)}").create();
                 Navigator.of(context).pop();
+                FileManager.instance.saveCards();
               }),
               child: const Text("Add"),
             )
@@ -139,9 +141,7 @@ class _FolderPageState extends State<FolderPage> {
                             builder: (context) => FolderPage(folder: folder.subFolders[index]),
                           )); 
                         }),
-                        onLongPress: () => setState(() {
-                          
-                        }),
+                        trailing: IconButton(onPressed: () => _showDeleteFolderDialog(index), icon: const Icon(Icons.delete)),
                       );
                     }
                     ),
@@ -152,9 +152,10 @@ class _FolderPageState extends State<FolderPage> {
   
   
   Future<void> _showCardDialog(BuildContext context,CardModel card) async {
-  File fileFront = File("assets\\images\\${folder.name}\\${card.frontDescription}0");
+    String folderPath = FileManager.instance.getFolderImagePath(folder);
+  File fileFront = File("$folderPath\\${card.frontDescription}0");
   bool fileFrontExists = await fileFront.exists(); 
-  File fileBack = File("assets\\images\\${folder.name}\\${card.frontDescription}1");
+  File fileBack = File("$folderPath\\${card.frontDescription}1");
   bool fileBackExists = await fileBack.exists(); 
     //final image = await  card.frontNotifier.renderImage();
   // ignore: use_build_context_synchronously
@@ -170,7 +171,7 @@ class _FolderPageState extends State<FolderPage> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 2,
                   width: MediaQuery.of(context).size.width / 2,
-                  child: _showCardInDialog(fileFrontExists, fileFront, card),
+                  child: _showCardInDialog(fileFrontExists, fileFront, card, card.frontDescription),
                 ),
                 ElevatedButton(
                   onPressed: () => setState(() {
@@ -184,7 +185,7 @@ class _FolderPageState extends State<FolderPage> {
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height / 2,
                       width: MediaQuery.of(context).size.width / 2,
-                      child: _showCardInDialog(fileBackExists, fileBack, card),
+                      child: _showCardInDialog(fileBackExists, fileBack, card, card.backDescription),
                       ),
                     ),
                 ),
@@ -196,22 +197,95 @@ class _FolderPageState extends State<FolderPage> {
     );
   }
 
-  Widget _showCardInDialog(bool fileExists, File file, CardModel card){
+  Widget _showCardInDialog(bool fileExists, File file, CardModel card, String text){
     if (fileExists){
       return Column(
         children: [
-          Text(card.backDescription),
+          Text(text),
           Expanded(child: Image.file(file)),
         ],
       );
     }
-    print("a");
-    return Text(card.backDescription);
+    return Text(text);
   }
 
-  Future<Image?> _showImage(File file) async{
-    
-    return null;
+
+  Future<void> _deleteImages(CardModel card, FolderModel folder) async{
+    String folderPath = FileManager.instance.getFolderImagePath(folder);
+    File file0 = File("$folderPath\\${card.frontDescription}0");
+    File file1 = File("$folderPath\\${card.frontDescription}1");
+    if(await file0.exists()){
+      file0.delete();
+    }
+    if(await file1.exists()){
+      file1.delete();
+    }
+  }
+
+  Future<void> _deleteFolder(FolderModel folderDeleted) async{
+    for (FolderModel subfolder in folderDeleted.subFolders){
+      await _deleteFolder(subfolder);
+    }
+    for(CardModel card in folderDeleted.cards){
+      await _deleteImages(card, folderDeleted);
+    }
+    await Directory(FileManager.instance.getFolderImagePath(folderDeleted)).delete();
+
+  }
+
+  _showDeleteCardDialog(int cardIndex){
+    showDialog(
+      context: context,
+      builder: (context) => SizedBox(
+        child: AlertDialog(
+          content: StatefulBuilder(
+            builder: (context,setState) =>
+            Text("Do you want to delete this card?")
+          ),
+          actions: [
+            ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: Text("Cancel")),
+            ElevatedButton(
+              onPressed: () => setState(() {
+                Navigator.of(context).pop();
+                _deleteImages(folder.cards[cardIndex], folder);
+                folder.cards.remove(folder.cards[cardIndex]);
+                FileManager.instance.saveCards();
+              }), 
+              child: Text("OK")
+            ),
+          ],
+        ),
+      )
+      
+    );
+  }
+
+
+  _showDeleteFolderDialog(int folderIndex){
+    showDialog(
+      context: context,
+      builder: (context) => SizedBox(
+        child: AlertDialog(
+          content: StatefulBuilder(
+            builder: (context,setState) =>
+            Text("Do you want to delete this folder?")
+          ),
+          actions: [
+            ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: Text("Cancel")),
+            ElevatedButton(
+              onPressed: () => setState(() {
+                Navigator.of(context).pop();
+                _deleteFolder(folder.subFolders[folderIndex]);
+                folder.subFolders.remove(folder.subFolders[folderIndex]);
+                FileManager.instance.saveCards();
+              }), 
+              child: Text("OK")
+            ),
+          ],
+        ),
+      )
+      
+    );
   }
   
   _showCards(BuildContext context) {
@@ -225,6 +299,10 @@ class _FolderPageState extends State<FolderPage> {
                     itemBuilder: (buildContext, index) {
                       return ListTile(
                         title: Text(folder.cards[index].frontDescription),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _showDeleteCardDialog(index),
+                        ),
                         onTap: () {
                           FolderController.instance.showBack = false;
                           _showCardDialog(context, folder.cards[index]);
