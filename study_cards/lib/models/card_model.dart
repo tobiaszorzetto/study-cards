@@ -4,6 +4,9 @@ import 'package:scribble/scribble.dart';
 class CardModel {
   String frontDescription;
   String backDescription;
+
+  DateTime timeToStudy = DateTime.now();
+
   CardModel({required this.frontDescription, required this.backDescription,});
 
   
