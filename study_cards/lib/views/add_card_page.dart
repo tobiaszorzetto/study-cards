@@ -1,16 +1,9 @@
-import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'package:scribble/scribble.dart';
-import 'package:study_cards/file_manager.dart';
-import 'package:study_cards/models/card_model.dart';
+import 'package:study_cards/controllers/add_card_controller.dart';
 import 'package:study_cards/models/folder_model.dart';
 import 'package:study_cards/views/folders_view.dart';
-import 'package:path_provider/path_provider.dart';
 
 class AddCardPage extends StatefulWidget {
   FolderModel folder;
@@ -22,46 +15,27 @@ class AddCardPage extends StatefulWidget {
 
 class _AddCardPageState extends State<AddCardPage>
     with TickerProviderStateMixin {
-  late ScribbleNotifier notifierFront;
-  late ScribbleNotifier notifierBack;
-  late TextEditingController frontTextController = TextEditingController();
-  late TextEditingController backTextController = TextEditingController();
-
-  bool eraseSelected = false;
-
-  bool showFrontSide = true;
-
-  late AnimationController _controller;
-  late Animation _animation;
-  AnimationStatus _status = AnimationStatus.dismissed;
-
-  final recorder = FlutterSoundRecorder();
   
-  FolderModel folder;
-
-  ByteData? imageFront;
-  ByteData? imageBack;
-
-  bool showImageBack = false; 
-  bool showImageFront = false; 
-
-  _AddCardPageState(this.folder);
+  late AddCardController controller;
+  _AddCardPageState(folder){
+    controller = AddCardController(folder);
+  }
   
 
   @override
   void initState() {
-    notifierFront = ScribbleNotifier();
-    notifierBack = ScribbleNotifier();
-    _controller = AnimationController(
+    controller.notifierFront = ScribbleNotifier();
+    controller.notifierBack = ScribbleNotifier();
+    controller.animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
     );
-    _animation = Tween(end: 1.0, begin: 0.0).animate(_controller)
+    controller.animation = Tween(end: 1.0, begin: 0.0).animate(controller.animationController)
       ..addListener(() {
         setState(() {});
       })
       ..addStatusListener((status) {
-        _status = status;
+        controller.animationStatus = status;
       });
     super.initState();
     //_initRecorder();
@@ -71,13 +45,13 @@ class _AddCardPageState extends State<AddCardPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-            title: Text("Add Card"),
+            title: const Text("Add Card"),
             leading: IconButton(
                 onPressed: () => setState(() {
                   Navigator.of(context).pop();
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => FolderPage(folder: folder),),);
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => FolderPage(folder: controller.folder),),);
                 }),
-                icon: Icon(Icons.arrow_back)
+                icon: const Icon(Icons.arrow_back)
               ),
           ),
       body: Row(
@@ -107,9 +81,9 @@ class _AddCardPageState extends State<AddCardPage>
         alignment: FractionalOffset.center,
         transform: Matrix4.identity()
           ..setEntry(2, 1, 0.0015)
-          ..rotateY(pi * _animation.value),
+          ..rotateY(pi * controller.animation.value),
         child: Card(
-          child: _animation.value <= 0.5 ? frontCard() : backCard(),
+          child: controller.animation.value <= 0.5 ? frontCard() : backCard(),
         ),
       ),
     );
@@ -118,15 +92,10 @@ class _AddCardPageState extends State<AddCardPage>
   Widget _changeCardSideButton() {
     return ElevatedButton.icon(
         onPressed: () {
-          _updateImage();
-          if (_status == AnimationStatus.dismissed) {
-            _controller.forward();
-          } else {
-            _controller.reverse();
-          }
+          controller.changeCardSide();
         },
         icon: const Icon(Icons.change_circle_outlined),
-        label: _status == AnimationStatus.dismissed
+        label: controller.animationStatus == AnimationStatus.dismissed
             ? const Text("front")
             : const Text("back"));
   }
@@ -138,19 +107,19 @@ class _AddCardPageState extends State<AddCardPage>
       child: FloatingActionButton.small(
         tooltip: "Erase",
         backgroundColor: const Color(0xFFF7FBFF),
-        elevation: eraseSelected ? 10 : 2,
-        shape: !eraseSelected
+        elevation: controller.eraseSelected ? 10 : 2,
+        shape: !controller.eraseSelected
             ? const CircleBorder()
             : RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
         child: const Icon(Icons.remove, color: Colors.blueGrey),
         onPressed: () => setState(() {
-          if (eraseSelected) {
-            eraseSelected = false;
+          if (controller.eraseSelected) {
+            controller.eraseSelected = false;
             notifier.setColor(Colors.black);
           } else {
-            eraseSelected = true;
+            controller.eraseSelected = true;
             notifier.setEraser();
             
           }
@@ -168,12 +137,6 @@ class _AddCardPageState extends State<AddCardPage>
       padding: const EdgeInsets.all(4),
       child: FloatingActionButton.small(
           backgroundColor: color,
-          //elevation: isSelected ? 10 : 2,
-          /*shape: !isSelected
-              ? const CircleBorder()
-              : RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),*/
           child: Container(),
           onPressed: () => notifier.setColor(color)),
     );
@@ -181,10 +144,10 @@ class _AddCardPageState extends State<AddCardPage>
 
   Widget _buildFlipAnimation() {
     return GestureDetector(
-      onTap: () => setState(() => showFrontSide = !showFrontSide),
+      onTap: () => setState(() => controller.showFrontSide = !controller.showFrontSide),
       child: AnimatedSwitcher(
         duration: Duration(milliseconds: 600),
-        child: showFrontSide ? frontCard() : backCard(),
+        child: controller.showFrontSide ? frontCard() : backCard(),
       ),
     );
   }
@@ -208,27 +171,27 @@ class _AddCardPageState extends State<AddCardPage>
       child: Stack(
         children: [
           Visibility(
-            visible: showImageFront,
+            visible: controller.showImageFront,
             child: Scribble(
-              notifier: notifierFront,
+              notifier: controller.notifierFront,
               drawPen: true,
             ),
           ),
           Column(
             children: [
               TextField(
-                controller: frontTextController,
+                controller: controller.frontTextController,
                 maxLines: null,
               ),
               CheckboxListTile(
-                value: showImageFront, 
+                value: controller.showImageFront, 
                 onChanged: (value) => setState(() {
-                  showImageFront = value!;
+                  controller.showImageFront = value!;
                 })
               ),
               Visibility(
-                visible: showImageFront,
-                child: _toolBar(context, notifierFront),
+                visible: controller.showImageFront,
+                child: _toolBar(context, controller.notifierFront),
               ),
             ],
           ),
@@ -242,9 +205,9 @@ class _AddCardPageState extends State<AddCardPage>
       child: Stack(
         children: [
           Visibility(
-            visible: showImageBack,
+            visible: controller.showImageBack,
             child: Scribble(
-              notifier: notifierBack,
+              notifier: controller.notifierBack,
               drawPen: true,
             ),
           ),
@@ -256,18 +219,18 @@ class _AddCardPageState extends State<AddCardPage>
             child: Column(
               children: [
                 TextField(
-                  controller: backTextController,
+                  controller: controller.backTextController,
                   maxLines: null,
                 ),
                 CheckboxListTile(
-                  value: showImageBack, 
+                  value: controller.showImageBack, 
                   onChanged: (value) => setState(() {
-                    showImageBack = value!;
+                    controller.showImageBack = value!;
                   })
                 ),
                 Visibility(
-                  visible: showImageBack,
-                  child: _toolBar(context, notifierBack)
+                  visible: controller.showImageBack,
+                  child: _toolBar(context, controller.notifierBack)
                 ),
               ],
             ),
@@ -275,51 +238,17 @@ class _AddCardPageState extends State<AddCardPage>
         ],
       ),
     );
-  }
-
-  String _getStringFolder(FolderModel folder){
-    if(folder.parentFolder == null){
-      return "";
-    }
-    return "${_getStringFolder(folder.parentFolder!)}\\${folder.name}";
-  }
-
-  Future<void> _saveImages() async {
-    await _updateImage();
-
-    if(imageFront != null && showImageFront){
-      File fileFront = File("${FileManager.instance.getFolderImagePath(folder)}\\${frontTextController.text}0");
-      fileFront.writeAsBytes(imageFront!.buffer.asUint8List());  
-    }
-    if(imageBack != null && showImageBack){
-      File fileBack = File("${FileManager.instance.getFolderImagePath(folder)}\\${frontTextController.text}1");
-      fileBack.writeAsBytes(imageBack!.buffer.asUint8List()); 
-    }
-
-  }
-
-  Future<void> _updateImage() async{
-    if (_status == AnimationStatus.dismissed) {
-      if(showImageFront){
-        imageFront = await notifierFront.renderImage();   
-      }
-    } else {
-      if(showImageBack){
-        imageBack = await notifierBack.renderImage();   
-      }
-    }
-  }
+  }  
   
   _addCard() {
     return ElevatedButton(
       onPressed: () => setState(() {
-        _saveImages();
-        folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text));
+        controller.addCard();
         Navigator.of(context).pop();
         Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => FolderPage(folder: folder),
+                builder: (context) => FolderPage(folder: controller.folder),
               ),);
-        FileManager.instance.saveCards();
+        
       }),
       child: const Text("Add"),
       );
