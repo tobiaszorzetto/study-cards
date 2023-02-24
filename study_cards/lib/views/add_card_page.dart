@@ -142,16 +142,6 @@ class _AddCardPageState extends State<AddCardPage>
     );
   }
 
-  Widget _buildFlipAnimation() {
-    return GestureDetector(
-      onTap: () => setState(() => controller.showFrontSide = !controller.showFrontSide),
-      child: AnimatedSwitcher(
-        duration: Duration(milliseconds: 600),
-        child: controller.showFrontSide ? frontCard() : backCard(),
-      ),
-    );
-  }
-
   Widget _toolBar(BuildContext context, ScribbleNotifier notifier) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,

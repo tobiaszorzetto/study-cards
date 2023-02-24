@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:scribble/scribble.dart';
 import 'package:study_cards/controllers/folder_controller.dart';
 import 'package:study_cards/file_manager.dart';
@@ -55,6 +56,7 @@ class _FolderPageState extends State<FolderPage> {
       body: SizedBox(
         child: Column(
           children: [
+            _showCardsToStudy(),
             Row(
               children: [
                 _addCard(),
@@ -67,6 +69,11 @@ class _FolderPageState extends State<FolderPage> {
         ),
       ), 
     );
+  }
+
+  Text _showCardsToStudy(){
+    folderController.setCardsToStudy();
+    return Text("${folderController.cardsToStudy.length}");
   }
 
   _addCard(){
@@ -94,7 +101,7 @@ class _FolderPageState extends State<FolderPage> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Add Folder"),
+        title: const Text("Add Folder"),
         content: SizedBox(
           height: MediaQuery.of(context).size.height / 8,
           width: MediaQuery.of(context).size.width / 4,
@@ -147,7 +154,6 @@ class _FolderPageState extends State<FolderPage> {
   
   Future<void> _showCardDialog(BuildContext context,CardModel card) async {
   await folderController.prepareImages(card);
-    //final image = await  card.frontNotifier.renderImage();
   // ignore: use_build_context_synchronously
   showDialog(
       context: context,
@@ -179,12 +185,57 @@ class _FolderPageState extends State<FolderPage> {
                       ),
                     ),
                 ),
+                Expanded(
+                  child: Visibility(
+                    visible: folderController.showBack,
+                    child: Row(
+                      children: [
+                        Slider(
+                          min: 0,
+                          max: 3,
+                          label: showDificultyLabel(),
+                          value: folderController.cardDificulty.toDouble(), 
+                          onChanged: (value) => setState(() {
+                            folderController.cardDificulty = value.toInt();
+                            folderController.setTimeToStudy();
+                          },)
+                        ),
+                        Text(showDificultyLabel()),
+                        Text(folderController.timeToStudy.toString()),
+                        ElevatedButton(
+                          onPressed: () => setState(() {
+                            _updateCardsToStudy(card);
+                          }), 
+                          child: const Text("OK")
+                        )
+
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ),
       )
     );
+  }
+
+  void _updateCardsToStudy(CardModel card){
+    setState(() {
+      folderController.createTimeToStudy(card);
+    });
+  }
+
+  String showDificultyLabel(){
+    if(folderController.cardDificulty == 0){
+      return "Easy";
+    } else if (folderController.cardDificulty == 1){
+      return "Medium";
+    } else if (folderController.cardDificulty == 2){
+      return "Hard";
+    }
+    return "Try Again";
   }
 
   Widget _showCardInDialog(bool fileExists, File file, CardModel card, String text){
@@ -239,16 +290,16 @@ class _FolderPageState extends State<FolderPage> {
         child: AlertDialog(
           content: StatefulBuilder(
             builder: (context,setState) =>
-            Text("Do you want to delete this folder?")
+            const Text("Do you want to delete this folder?")
           ),
           actions: [
-            ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: Text("Cancel")),
+            ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: const Text("Cancel")),
             ElevatedButton(
               onPressed: () => setState(() {
                 Navigator.of(context).pop();
                 folderController.deleteSubfolder(folderIndex);
               }), 
-              child: Text("OK")
+              child: const Text("OK")
             ),
           ],
         ),
@@ -260,14 +311,17 @@ class _FolderPageState extends State<FolderPage> {
   _showCards(BuildContext context) {
     return Column(
       children: [
-        Text("Cards"),
+        const Text("Cards"),
         SizedBox(
                   height: 400,
                   child: ListView.builder(
                     itemCount: folderController.folder.cards.length,
                     itemBuilder: (buildContext, index) {
                       return ListTile(
+                        leading: Icon(Icons.circle,color: folderController.cardsToStudy.contains(folderController.folder.cards[index])? Colors.red :Colors.green ,),
                         title: Text(folderController.folder.cards[index].frontDescription),
+                        subtitle: folderController.folder.cards[index].timeToStudy.compareTo(DateTime.now()) > 0 ? 
+                          Text("${folderController.folder.cards[index].timeToStudy}") : const Text(""),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () => _showDeleteCardDialog(index),
@@ -283,4 +337,5 @@ class _FolderPageState extends State<FolderPage> {
       ],
     );
   }
+  
 }

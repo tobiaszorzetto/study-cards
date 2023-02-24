@@ -13,10 +13,13 @@ class CardModel {
   Map toJson() => {
     "frontDescription": frontDescription,
     "backDescription": backDescription,
+    "timeToStudy": timeToStudy.millisecondsSinceEpoch,
   };
 
   factory CardModel.fromJson(dynamic json){
-    return CardModel(frontDescription: json["frontDescription"], backDescription: json["backDescription"]);
+    CardModel newCard =  CardModel(frontDescription: json["frontDescription"], backDescription: json["backDescription"], );
+    newCard.timeToStudy = DateTime.fromMillisecondsSinceEpoch(json["timeToStudy"]);
+    return newCard;
   }
 
 }
