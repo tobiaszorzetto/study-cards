@@ -7,6 +7,7 @@ import 'package:study_cards/controllers/folder_controller.dart';
 import 'package:study_cards/file_manager.dart';
 import 'package:study_cards/models/folder_model.dart';
 import 'package:study_cards/views/add_card_page.dart';
+import 'package:study_cards/views/study_cards_page.dart';
 
 import '../models/card_model.dart';
 
@@ -41,7 +42,6 @@ class _FolderPageState extends State<FolderPage> {
                 builder: (context) => FolderPage(folder: folderController.folder.parentFolder!),
               )); 
             }
-
           }),
           ),
         actions: [
@@ -53,27 +53,34 @@ class _FolderPageState extends State<FolderPage> {
           ),
         ],
       ),
-      body: SizedBox(
-        child: Column(
-          children: [
-            _showCardsToStudy(),
-            Row(
-              children: [
-                _addCard(),
-                _addFolderButton(),
-              ],
-            ),
-            _showFolders(context),
-            _showCards(context),
-          ],
+      body: SingleChildScrollView(
+        child: SizedBox(
+          child: Column(
+            children: [
+              _showCardsToStudy(),
+              SizedBox(height: 50,),
+              _showFolders(context),
+              _showCards(context),
+            ],
+          ),
         ),
       ), 
     );
   }
 
-  Text _showCardsToStudy(){
+  Widget _showCardsToStudy(){
     folderController.setCardsToStudy();
-    return Text("${folderController.cardsToStudy.length}");
+    return Column(
+      children: [
+        Text("${folderController.cardsToStudy.length}"),
+        ElevatedButton(
+          onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => StudyCardsPage(folder: folderController.folder, cardsToStudy: folderController.cardsToStudy),
+              )),
+          child: const Text("Study Cards"),
+          )
+      ],
+    );
   }
 
   _addCard(){
@@ -85,7 +92,7 @@ class _FolderPageState extends State<FolderPage> {
                 builder: (context) => AddCardPage(folder: folderController.folder),
               ),);
               }),
-              child: const Text("Add Card"),
+              child: const Text("Cards"),
             );
   }
   _addFolderButton(){
@@ -101,7 +108,7 @@ class _FolderPageState extends State<FolderPage> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Add Folder"),
+        title: const Text("Folders"),
         content: SizedBox(
           height: MediaQuery.of(context).size.height / 8,
           width: MediaQuery.of(context).size.width / 4,
@@ -128,7 +135,7 @@ class _FolderPageState extends State<FolderPage> {
   _showFolders(BuildContext context){
     return Column(
       children: [
-        const Text("Folders"),
+        _addFolderButton(),
         SizedBox(
                   height: 400,
                   child: ListView.builder(
@@ -154,6 +161,7 @@ class _FolderPageState extends State<FolderPage> {
   
   Future<void> _showCardDialog(BuildContext context,CardModel card) async {
   await folderController.prepareImages(card);
+  
   // ignore: use_build_context_synchronously
   showDialog(
       context: context,
@@ -161,59 +169,67 @@ class _FolderPageState extends State<FolderPage> {
         child: AlertDialog(
           content: StatefulBuilder(
             builder: (context,setState) =>
-            Column(
-              children: [
-                Text(card.frontDescription),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height / 2,
-                  width: MediaQuery.of(context).size.width / 2,
-                  child: _showCardInDialog(folderController.frontCardExists, folderController.frontCardFile, card, card.frontDescription),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() {
-                    folderController.showBack = !folderController.showBack;
-                  }), 
-                  child: const Text("Show Back")
-                  ),
-                Expanded(
-                  child: Visibility(
-                    visible: folderController.showBack,
-                    child: SizedBox(
+            SizedBox(
+              height: 600,
+              width: 600,
+              child: SingleChildScrollView(
+                controller: folderController.scrollController,
+                child: Column(
+                  children: [
+                    Text(card.frontDescription),
+                    SizedBox(
                       height: MediaQuery.of(context).size.height / 2,
                       width: MediaQuery.of(context).size.width / 2,
-                      child: _showCardInDialog(folderController.backCardExists, folderController.backCardFile, card, card.backDescription),
+                      child: _showCardInDialog(folderController.frontCardExists, folderController.frontCardFile, card, card.frontDescription),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => setState(() {
+                        folderController.showBack = !folderController.showBack;
+                        if(folderController.showBack){
+                          folderController.scrollController.animateTo(600, duration: const Duration(seconds: 1), curve: Curves.ease);
+                        } else{
+                          folderController.scrollController.animateTo(0, duration: const Duration(seconds: 1), curve: Curves.ease);
+                        }
+                      }), 
+                      child: const Text("Show Back")
+                      ),
+                    Visibility(
+                      visible: folderController.showBack,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height / 2,
+                        width: MediaQuery.of(context).size.width / 2,
+                        child: _showCardInDialog(folderController.backCardExists, folderController.backCardFile, card, card.backDescription),
+                        ),
+                      ),
+                    Visibility(
+                      visible: folderController.showBack,
+                      child: Row(
+                        children: [
+                          Slider(
+                            min: 0,
+                            max: 3,
+                            label: showDificultyLabel(),
+                            value: folderController.cardDificulty.toDouble(), 
+                            onChanged: (value) => setState(() {
+                              folderController.cardDificulty = value.toInt();
+                              folderController.setTimeToStudy();
+                            },)
+                          ),
+                          Text(showDificultyLabel()),
+                          Text(folderController.timeToStudy.toString()),
+                          ElevatedButton(
+                            onPressed: () => setState(() {
+                              _updateCardsToStudy(card);
+                            }), 
+                            child: const Text("OK")
+                          )
+                          
+                        ],
                       ),
                     ),
+                  ],
                 ),
-                Expanded(
-                  child: Visibility(
-                    visible: folderController.showBack,
-                    child: Row(
-                      children: [
-                        Slider(
-                          min: 0,
-                          max: 3,
-                          label: showDificultyLabel(),
-                          value: folderController.cardDificulty.toDouble(), 
-                          onChanged: (value) => setState(() {
-                            folderController.cardDificulty = value.toInt();
-                            folderController.setTimeToStudy();
-                          },)
-                        ),
-                        Text(showDificultyLabel()),
-                        Text(folderController.timeToStudy.toString()),
-                        ElevatedButton(
-                          onPressed: () => setState(() {
-                            _updateCardsToStudy(card);
-                          }), 
-                          child: const Text("OK")
-                        )
-
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -311,7 +327,7 @@ class _FolderPageState extends State<FolderPage> {
   _showCards(BuildContext context) {
     return Column(
       children: [
-        const Text("Cards"),
+        _addCard(),
         SizedBox(
                   height: 400,
                   child: ListView.builder(

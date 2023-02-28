@@ -25,6 +25,8 @@ class FolderController{
 
   FolderController(this.folder);
 
+  ScrollController scrollController = ScrollController();
+
   // CREATE
 
   void createFolder(){
