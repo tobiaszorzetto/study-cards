@@ -12,8 +12,8 @@ import '../models/folder_model.dart';
 class AddCardController{
   late ScribbleNotifier notifierFront;
   late ScribbleNotifier notifierBack;
-  late TextEditingController frontTextController = TextEditingController();
-  late TextEditingController backTextController = TextEditingController();
+  TextEditingController frontTextController = TextEditingController();
+  TextEditingController backTextController = TextEditingController();
   double stroke = 1;
 
   bool eraseSelected = false;
