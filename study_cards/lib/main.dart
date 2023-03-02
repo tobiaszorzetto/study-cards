@@ -19,6 +19,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home:FolderPage(folder:FolderModel.instance),
+      theme: ThemeData.dark(),
     );
   }
 }

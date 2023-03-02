@@ -57,16 +57,14 @@ class _AddCardPageState extends State<AddCardPage>
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Card(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _changeCardSideButton(),
-                _showCard(),
-                _addCard(),
-              ],
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _changeCardSideButton(),
+              _showCard(),
+              _addCard(),
+            ],
           ),
         ],
       ),
@@ -82,9 +80,7 @@ class _AddCardPageState extends State<AddCardPage>
         transform: Matrix4.identity()
           ..setEntry(2, 1, 0.0015)
           ..rotateY(pi * controller.animation.value),
-        child: Card(
-          child: controller.animation.value <= 0.5 ? frontCard() : backCard(),
-        ),
+        child: controller.animation.value <= 0.5 ? frontCard() : backCard(),
       ),
     );
   }
@@ -102,6 +98,7 @@ class _AddCardPageState extends State<AddCardPage>
 
 
   Widget _buildEraserButton(ScribbleNotifier notifier) {
+    controller.drawingColor = Colors.white;
     return Padding(
       padding: const EdgeInsets.all(4),
       child: FloatingActionButton.small(
@@ -133,84 +130,150 @@ class _AddCardPageState extends State<AddCardPage>
     required Color color,
     required ScribbleNotifier notifier,
   }) {
+    controller.drawingColor = color;
     return Padding(
       padding: const EdgeInsets.all(4),
       child: FloatingActionButton.small(
+          heroTag: "btn${color.toString()}" ,
           backgroundColor: color,
           child: Container(),
           onPressed: () => notifier.setColor(color)),
     );
   }
 
-  Widget _buildFlipAnimation() {
-    return GestureDetector(
-      onTap: () => setState(() => controller.showFrontSide = !controller.showFrontSide),
-      child: AnimatedSwitcher(
-        duration: Duration(milliseconds: 600),
-        child: controller.showFrontSide ? frontCard() : backCard(),
+  Widget _buildStrokeSlider(
+    BuildContext context, {
+    required ScribbleNotifier notifier,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Slider(
+        min: 1,
+        max: 10,
+        activeColor: controller.drawingColor,
+        inactiveColor: controller.drawingColor,
+        thumbColor: controller.drawingColor,
+        divisions: 9,
+        label: controller.stroke.toString(),
+        value: controller.stroke,
+        onChanged: (value) => setState(() {
+          controller.stroke = value;
+          notifier.setStrokeWidth(controller.stroke);
+        })
       ),
     );
   }
 
   Widget _toolBar(BuildContext context, ScribbleNotifier notifier) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        _buildEraserButton(notifier),
-        _buildColorButton(context, color: Colors.black, notifier: notifier),
-        _buildColorButton(context, color: Colors.red, notifier: notifier),
-        _buildColorButton(context, color: Colors.blue, notifier: notifier),
-        //_buildRecordButton(),
-      ],
+    return ListTile(
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                _buildEraserButton(notifier),
+                _buildColorButton(context, color: Colors.black, notifier: notifier),
+                _buildColorButton(context, color: Colors.red, notifier: notifier),
+                _buildColorButton(context, color: Colors.blue, notifier: notifier),
+              ],
+            ),
+          ),
+          Expanded(child: _buildStrokeSlider(context, notifier: notifier)),
+          //_buildRecordButton(),
+        ],
+      ),
+      trailing: Checkbox(
+        value: controller.showFrontSide? controller.showImageFront:controller.showImageBack , 
+        onChanged: (value) => setState(() {
+          controller.showFrontSide? controller.showImageFront = value! :controller.showImageBack = value!;
+        })
+      ),
     );
   }
 
+  Card showCardSide(){
+    return Card(
+      child: Column(
+        children: [
+          TextField(
+            controller: controller.showFrontSide? controller.frontTextController:controller.backTextController,
+            maxLines: null,
+          ),
+          Visibility(
+            visible: controller.showFrontSide? !controller.showImageFront:!controller.showImageBack,
+            child: CheckboxListTile(
+              title: const Text("Draw"),
+              value: controller.showFrontSide? controller.showImageFront:controller.showImageBack, 
+              onChanged: (value) => setState(() {
+                controller.showFrontSide? controller.showImageFront = value!:controller.showImageBack = value!;
+              })
+            ),
+          ),
+          Visibility(
+            visible: controller.showFrontSide? controller.showImageFront:controller.showImageBack,
+            child: _toolBar(context, controller.showFrontSide? controller.notifierFront: controller.notifierBack),
+          ),
+          const Divider(),
+          Visibility(
+          visible: controller.showFrontSide? controller.showImageFront:controller.showImageBack,
+          child: Expanded(
+            child: Scribble(
+              notifier: controller.showFrontSide? controller.notifierFront: controller.notifierBack,
+              drawPen: true,
+            ),
+          ),
+      ),
+        ],
+      ),
+    );
+  }
+
+
   Card frontCard() {
     return Card(
-      child: Stack(
+      child: Column(
         children: [
+          TextField(
+            controller: controller.frontTextController,
+            maxLines: null,
+          ),
+          Visibility(
+            visible: !controller.showImageFront,
+            child: CheckboxListTile(
+              title: const Text("Draw"),
+              value: controller.showImageFront, 
+              onChanged: (value) => setState(() {
+                controller.showImageFront = value!;
+              })
+            ),
+          ),
           Visibility(
             visible: controller.showImageFront,
+            child: _toolBar(context, controller.notifierFront),
+          ),
+          const Divider(),
+          Visibility(
+          visible: controller.showImageFront,
+          child: Expanded(
             child: Scribble(
               notifier: controller.notifierFront,
               drawPen: true,
             ),
           ),
-          Column(
-            children: [
-              TextField(
-                controller: controller.frontTextController,
-                maxLines: null,
-              ),
-              CheckboxListTile(
-                value: controller.showImageFront, 
-                onChanged: (value) => setState(() {
-                  controller.showImageFront = value!;
-                })
-              ),
-              Visibility(
-                visible: controller.showImageFront,
-                child: _toolBar(context, controller.notifierFront),
-              ),
-            ],
-          ),
+      ),
         ],
       ),
     );
   }
 
   Card backCard() {
+    
     return Card(
       child: Stack(
         children: [
-          Visibility(
-            visible: controller.showImageBack,
-            child: Scribble(
-              notifier: controller.notifierBack,
-              drawPen: true,
-            ),
-          ),
+          
           Transform(
             alignment: FractionalOffset.center,
             transform: Matrix4.identity()
@@ -222,15 +285,28 @@ class _AddCardPageState extends State<AddCardPage>
                   controller: controller.backTextController,
                   maxLines: null,
                 ),
-                CheckboxListTile(
-                  value: controller.showImageBack, 
-                  onChanged: (value) => setState(() {
-                    controller.showImageBack = value!;
-                  })
+                Visibility(
+                  visible: !controller.showImageBack,
+                  child: CheckboxListTile(
+                    title: const Text("Draw"),
+                    value: controller.showImageBack, 
+                    onChanged: (value) => setState(() {
+                      controller.showImageBack = value!;
+                    })
+                  ),
                 ),
                 Visibility(
                   visible: controller.showImageBack,
                   child: _toolBar(context, controller.notifierBack)
+                ),
+                Expanded(
+                  child: Visibility(
+                    visible: controller.showImageBack,
+                    child: Scribble(
+                      notifier: controller.notifierBack,
+                      drawPen: true,
+                    ),
+                  ),
                 ),
               ],
             ),

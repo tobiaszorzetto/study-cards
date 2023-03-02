@@ -17,8 +17,15 @@ class FolderController{
   late bool backCardExists;
 
   TextEditingController folderCreateNameController = TextEditingController(text: "");
+  int cardDificulty = 0 ;
+  Duration timeToStudy = const Duration(minutes:0);
+
+  
+  List<CardModel> cardsToStudy = [];
 
   FolderController(this.folder);
+
+  ScrollController scrollController = ScrollController();
 
   // CREATE
 
@@ -28,6 +35,23 @@ class FolderController{
     Directory(FileManager.instance.getFolderImagePath(newSubFolder)).create();
     FileManager.instance.saveCards();
   }
+
+  void setCardsToStudy(){
+    cardsToStudy = [];
+    for(CardModel card in folder.cards){
+      if(card.timeToStudy.compareTo(DateTime.now())<=0){
+        cardsToStudy.add(card);
+      }
+    }
+  }
+
+  void createTimeToStudy(CardModel card){
+      card.timeToStudy = DateTime.now().add(timeToStudy);
+      FileManager.instance.saveCards();
+      setCardsToStudy();
+  }
+
+  
 
 
     //DELETE
@@ -76,4 +100,17 @@ class FolderController{
     backCardFile = File("$folderPath\\${card.frontDescription}1");
     backCardExists = await backCardFile.exists(); 
   }
+
+  void setTimeToStudy(){
+    if(cardDificulty == 0){
+      const timeToStudy = Duration(days: 6);
+    } else if(cardDificulty == 1){
+      const timeToStudy = Duration(days: 1);
+    } else if(cardDificulty == 2){
+      const timeToStudy = Duration(minutes: 10);
+    } else{
+      const timeToStudy = Duration(minutes: 0);
+    }
+  }
+  
 }

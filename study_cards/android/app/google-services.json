@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1031696610807",
+    "project_id": "studycards-e3d50",
+    "storage_bucket": "studycards-e3d50.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031696610807:android:3cd8956d5419b347ed6af2",
+        "android_client_info": {
+          "package_name": "com.example.study_cards"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031696610807-iab945c4b7vni34qm6frgre7o84hidq8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAo5mkg2BeoIStG2fO07wJ5gO55ctIPhgc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1031696610807-iab945c4b7vni34qm6frgre7o84hidq8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
