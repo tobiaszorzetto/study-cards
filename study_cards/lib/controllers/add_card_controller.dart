@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_sound/public/flutter_sound_recorder.dart';
+import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
 
 import '../file_manager.dart';
@@ -14,6 +14,7 @@ class AddCardController{
   late ScribbleNotifier notifierBack;
   late TextEditingController frontTextController = TextEditingController();
   late TextEditingController backTextController = TextEditingController();
+  double stroke = 1;
 
   bool eraseSelected = false;
 
@@ -23,7 +24,8 @@ class AddCardController{
   late Animation animation;
   AnimationStatus animationStatus = AnimationStatus.dismissed;
 
-  
+  Color drawingColor = Colors.black;
+
   FolderModel folder;
 
   ByteData? imageFront;
@@ -37,8 +39,10 @@ class AddCardController{
   void changeCardSide(){
     updateImage();
     if (animationStatus == AnimationStatus.dismissed) {
+      showFrontSide = false;
       animationController.forward();
     } else {
+      showFrontSide = true;
       animationController.reverse();
     }
   }

@@ -103,13 +103,13 @@ class FolderController{
 
   void setTimeToStudy(){
     if(cardDificulty == 0){
-      timeToStudy = Duration(days: 6);
+      const timeToStudy = Duration(days: 6);
     } else if(cardDificulty == 1){
-      timeToStudy = Duration(days: 1);
+      const timeToStudy = Duration(days: 1);
     } else if(cardDificulty == 2){
-      timeToStudy = Duration(minutes: 10);
+      const timeToStudy = Duration(minutes: 10);
     } else{
-      timeToStudy = Duration(minutes: 0);
+      const timeToStudy = Duration(minutes: 0);
     }
   }
   
