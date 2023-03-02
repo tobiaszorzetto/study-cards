@@ -5,6 +5,7 @@ import 'package:study_cards/controllers/study_cards_controller.dart';
 import 'package:study_cards/models/card_model.dart';
 import 'package:study_cards/views/folders_view.dart';
 
+import '../file_manager.dart';
 import '../models/folder_model.dart';
 
 class StudyCardsPage extends StatefulWidget {
@@ -145,6 +146,7 @@ class _StudyCardsPageState extends State<StudyCardsPage>{
     return Expanded(child: ElevatedButton(
         onPressed: () => setState(() {
           controller.cardsToStudy[controller.indexCardShowing].timeToStudy = DateTime.now().add(duration);
+          FileManager.instance.saveCards();
           controller.cardsStudied.add(controller.indexCardShowing);
           controller.nextCard();
         }), 
