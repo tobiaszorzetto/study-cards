@@ -1,11 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
-
 import '../file_manager.dart';
 import '../models/card_model.dart';
 import '../models/folder_model.dart';
-
 class StudyCardsController{
   int indexCardShowing = 0;
   int maxIndex = 0;
@@ -42,9 +39,7 @@ class StudyCardsController{
     }
     await setImages();
   }
-
-  setImages() async{
-        
+  setImages() async{  
     frontCardFile = File("$folderPath\\${cardsToStudy[indexCardShowing].frontDescription}0");
     backCardFile = File("$folderPath\\${cardsToStudy[indexCardShowing].frontDescription}1");
     if (! await frontCardFile!.exists()){

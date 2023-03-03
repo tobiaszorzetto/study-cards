@@ -50,10 +50,7 @@ class FolderController{
       FileManager.instance.saveCards();
       setCardsToStudy();
   }
-
   
-
-
     //DELETE
 
   Future<void> _deleteImages(CardModel card, FolderModel folder) async{

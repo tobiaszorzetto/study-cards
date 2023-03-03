@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:scribble/scribble.dart';
 
 class CardModel {
   String frontDescription;
