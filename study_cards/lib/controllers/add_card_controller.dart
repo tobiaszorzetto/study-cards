@@ -34,6 +34,8 @@ class AddCardController{
   bool showImageBack = false; 
   bool showImageFront = false; 
 
+  bool highlightFrontText = false;
+
   AddCardController(this.folder);
 
   void changeCardSide(){
