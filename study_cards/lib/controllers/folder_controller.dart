@@ -17,6 +17,7 @@ class FolderController{
   late bool backCardExists;
 
   TextEditingController folderCreateNameController = TextEditingController(text: "");
+  bool folderCreateValidated = true;
   int cardDificulty = 0 ;
   Duration timeToStudy = const Duration(minutes:0);
 
@@ -29,11 +30,22 @@ class FolderController{
 
   // CREATE
 
+  bool validateFolder(){
+    if(folder.subFolders.map((e) => e.name).toList().contains(folderCreateNameController.text)){
+      folderCreateValidated = false;
+      return false;
+    }
+    folderCreateValidated = true;
+    return true;
+  }
+
   void createFolder(){
     FolderModel newSubFolder = FolderModel(name: folderCreateNameController.text, parentFolder: folder);
     folder.subFolders.add(newSubFolder);
     Directory(FileManager.instance.getFolderImagePath(newSubFolder)).create();
     FileManager.instance.saveCards();
+    folderCreateNameController.text = "";
+    folderCreateValidated = true;
   }
 
   void setCardsToStudy(){
