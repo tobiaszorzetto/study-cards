@@ -15,12 +15,10 @@ class AddCardPage extends StatefulWidget {
 
 class _AddCardPageState extends State<AddCardPage>
     with TickerProviderStateMixin {
-  
   late AddCardController controller;
-  _AddCardPageState(folder){
+  _AddCardPageState(folder) {
     controller = AddCardController(folder);
   }
-  
 
   @override
   void initState() {
@@ -30,13 +28,14 @@ class _AddCardPageState extends State<AddCardPage>
       vsync: this,
       duration: const Duration(seconds: 1),
     );
-    controller.animation = Tween(end: 1.0, begin: 0.0).animate(controller.animationController)
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        controller.animationStatus = status;
-      });
+    controller.animation =
+        Tween(end: 1.0, begin: 0.0).animate(controller.animationController)
+          ..addListener(() {
+            setState(() {});
+          })
+          ..addStatusListener((status) {
+            controller.animationStatus = status;
+          });
     super.initState();
     //_initRecorder();
   }
@@ -45,15 +44,19 @@ class _AddCardPageState extends State<AddCardPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-            title: const Text("Add Card"),
-            leading: IconButton(
-                onPressed: () => setState(() {
+        title: const Text("Add Card"),
+        leading: IconButton(
+            onPressed: () => setState(() {
                   Navigator.of(context).pop();
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => FolderPage(folder: controller.folder),),);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          FolderPage(folder: controller.folder),
+                    ),
+                  );
                 }),
-                icon: const Icon(Icons.arrow_back)
-              ),
-          ),
+            icon: const Icon(Icons.arrow_back)),
+      ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -96,7 +99,6 @@ class _AddCardPageState extends State<AddCardPage>
             : const Text("back"));
   }
 
-
   Widget _buildEraserButton(ScribbleNotifier notifier) {
     controller.drawingColor = Colors.white;
     return Padding(
@@ -118,7 +120,6 @@ class _AddCardPageState extends State<AddCardPage>
           } else {
             controller.eraseSelected = true;
             notifier.setEraser();
-            
           }
         }),
       ),
@@ -134,7 +135,7 @@ class _AddCardPageState extends State<AddCardPage>
     return Padding(
       padding: const EdgeInsets.all(4),
       child: FloatingActionButton.small(
-          heroTag: "btn${color.toString()}" ,
+          heroTag: "btn${color.toString()}",
           backgroundColor: color,
           child: Container(),
           onPressed: () => notifier.setColor(color)),
@@ -148,19 +149,18 @@ class _AddCardPageState extends State<AddCardPage>
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Slider(
-        min: 1,
-        max: 10,
-        activeColor: controller.drawingColor,
-        inactiveColor: controller.drawingColor,
-        thumbColor: controller.drawingColor,
-        divisions: 9,
-        label: controller.stroke.toString(),
-        value: controller.stroke,
-        onChanged: (value) => setState(() {
-          controller.stroke = value;
-          notifier.setStrokeWidth(controller.stroke);
-        })
-      ),
+          min: 1,
+          max: 10,
+          activeColor: controller.drawingColor,
+          inactiveColor: controller.drawingColor,
+          thumbColor: controller.drawingColor,
+          divisions: 9,
+          label: controller.stroke.toString(),
+          value: controller.stroke,
+          onChanged: (value) => setState(() {
+                controller.stroke = value;
+                notifier.setStrokeWidth(controller.stroke);
+              })),
     );
   }
 
@@ -174,9 +174,12 @@ class _AddCardPageState extends State<AddCardPage>
             child: Row(
               children: [
                 _buildEraserButton(notifier),
-                _buildColorButton(context, color: Colors.black, notifier: notifier),
-                _buildColorButton(context, color: Colors.red, notifier: notifier),
-                _buildColorButton(context, color: Colors.blue, notifier: notifier),
+                _buildColorButton(context,
+                    color: Colors.black, notifier: notifier),
+                _buildColorButton(context,
+                    color: Colors.red, notifier: notifier),
+                _buildColorButton(context,
+                    color: Colors.blue, notifier: notifier),
               ],
             ),
           ),
@@ -185,69 +188,96 @@ class _AddCardPageState extends State<AddCardPage>
         ],
       ),
       trailing: Checkbox(
-        value: controller.showFrontSide? controller.showImageFront:controller.showImageBack , 
-        onChanged: (value) => setState(() {
-          controller.showFrontSide? controller.showImageFront = value! :controller.showImageBack = value!;
-        })
-      ),
+          value: controller.showFrontSide
+              ? controller.showImageFront
+              : controller.showImageBack,
+          onChanged: (value) => setState(() {
+                controller.showFrontSide
+                    ? controller.showImageFront = value!
+                    : controller.showImageBack = value!;
+              })),
     );
   }
 
-  Card showCardSide(){
+  Card showCardSide() {
     return Card(
       child: Column(
         children: [
           TextField(
-            controller: controller.showFrontSide? controller.frontTextController:controller.backTextController,
+            controller: controller.showFrontSide
+                ? controller.frontTextController
+                : controller.backTextController,
             maxLines: null,
           ),
           Visibility(
-            visible: controller.showFrontSide? !controller.showImageFront:!controller.showImageBack,
+            visible: controller.showFrontSide
+                ? !controller.showImageFront
+                : !controller.showImageBack,
             child: CheckboxListTile(
-              title: const Text("Draw"),
-              value: controller.showFrontSide? controller.showImageFront:controller.showImageBack, 
-              onChanged: (value) => setState(() {
-                controller.showFrontSide? controller.showImageFront = value!:controller.showImageBack = value!;
-              })
-            ),
+                title: const Text("Draw"),
+                value: controller.showFrontSide
+                    ? controller.showImageFront
+                    : controller.showImageBack,
+                onChanged: (value) => setState(() {
+                      controller.showFrontSide
+                          ? controller.showImageFront = value!
+                          : controller.showImageBack = value!;
+                    })),
           ),
           Visibility(
-            visible: controller.showFrontSide? controller.showImageFront:controller.showImageBack,
-            child: _toolBar(context, controller.showFrontSide? controller.notifierFront: controller.notifierBack),
+            visible: controller.showFrontSide
+                ? controller.showImageFront
+                : controller.showImageBack,
+            child: _toolBar(
+                context,
+                controller.showFrontSide
+                    ? controller.notifierFront
+                    : controller.notifierBack),
           ),
           const Divider(),
           Visibility(
-          visible: controller.showFrontSide? controller.showImageFront:controller.showImageBack,
-          child: Expanded(
-            child: Scribble(
-              notifier: controller.showFrontSide? controller.notifierFront: controller.notifierBack,
-              drawPen: true,
+            visible: controller.showFrontSide
+                ? controller.showImageFront
+                : controller.showImageBack,
+            child: Expanded(
+              child: Scribble(
+                notifier: controller.showFrontSide
+                    ? controller.notifierFront
+                    : controller.notifierBack,
+                drawPen: true,
+              ),
             ),
           ),
-      ),
         ],
       ),
     );
   }
 
-
   Card frontCard() {
     return Card(
       child: Column(
         children: [
-          TextField(
+          TextFormField(
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: controller.highlightFrontText? const BorderSide(color: Colors.red) : const BorderSide(color: Color.fromARGB(255, 146, 146, 146)),
+              ),
+              border: OutlineInputBorder(
+                borderSide: controller.highlightFrontText? const BorderSide(color: Colors.red) : const BorderSide(color: Color.fromARGB(255, 146, 146, 146)),
+              ),
+              
+            ),
             controller: controller.frontTextController,
             maxLines: null,
           ),
           Visibility(
             visible: !controller.showImageFront,
             child: CheckboxListTile(
-              title: const Text("Draw"),
-              value: controller.showImageFront, 
-              onChanged: (value) => setState(() {
-                controller.showImageFront = value!;
-              })
-            ),
+                title: const Text("Draw"),
+                value: controller.showImageFront,
+                onChanged: (value) => setState(() {
+                      controller.showImageFront = value!;
+                    })),
           ),
           Visibility(
             visible: controller.showImageFront,
@@ -255,25 +285,23 @@ class _AddCardPageState extends State<AddCardPage>
           ),
           const Divider(),
           Visibility(
-          visible: controller.showImageFront,
-          child: Expanded(
-            child: Scribble(
-              notifier: controller.notifierFront,
-              drawPen: true,
+            visible: controller.showImageFront,
+            child: Expanded(
+              child: Scribble(
+                notifier: controller.notifierFront,
+                drawPen: true,
+              ),
             ),
           ),
-      ),
         ],
       ),
     );
   }
 
   Card backCard() {
-    
     return Card(
       child: Stack(
         children: [
-          
           Transform(
             alignment: FractionalOffset.center,
             transform: Matrix4.identity()
@@ -288,17 +316,15 @@ class _AddCardPageState extends State<AddCardPage>
                 Visibility(
                   visible: !controller.showImageBack,
                   child: CheckboxListTile(
-                    title: const Text("Draw"),
-                    value: controller.showImageBack, 
-                    onChanged: (value) => setState(() {
-                      controller.showImageBack = value!;
-                    })
-                  ),
+                      title: const Text("Draw"),
+                      value: controller.showImageBack,
+                      onChanged: (value) => setState(() {
+                            controller.showImageBack = value!;
+                          })),
                 ),
                 Visibility(
-                  visible: controller.showImageBack,
-                  child: _toolBar(context, controller.notifierBack)
-                ),
+                    visible: controller.showImageBack,
+                    child: _toolBar(context, controller.notifierBack)),
                 Expanded(
                   child: Visibility(
                     visible: controller.showImageBack,
@@ -314,19 +340,24 @@ class _AddCardPageState extends State<AddCardPage>
         ],
       ),
     );
-  }  
-  
+  }
+
   _addCard() {
     return ElevatedButton(
       onPressed: () => setState(() {
-        controller.addCard();
-        Navigator.of(context).pop();
-        Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => FolderPage(folder: controller.folder),
-              ),);
-        
+        if (controller.frontTextController.text.replaceAll(" ", "") != "") {
+          controller.addCard();
+          Navigator.of(context).pop();
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => FolderPage(folder: controller.folder),
+            ),
+          );
+        } else {
+          controller.highlightFrontText = true;
+        }
       }),
       child: const Text("Add"),
-      );
+    );
   }
 }
