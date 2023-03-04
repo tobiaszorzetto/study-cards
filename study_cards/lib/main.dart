@@ -10,7 +10,7 @@ const projectId = "studycards-e3d50";
 void main() async {
   Firestore.initialize(projectId);
   WidgetsFlutterBinding.ensureInitialized();
-  await FileManager.instance.loadCards();
+  await FileManager.instance.loadFromFirestone("General/General", FolderModel.instance);
   runApp(const MainApp());
 }
 

@@ -15,6 +15,24 @@ class FileManager {
     return directory.path;
   }
 
+  Future<void> loadFromFirestone(String path, FolderModel folder) async{
+        
+    CollectionReference subFoldersCollection = Firestore.instance.collection("$path/subfolders");
+    CollectionReference cardsCollection = Firestore.instance.collection("$path/cards");
+    for(Document subfolderDocument in await subFoldersCollection.orderBy("name").get()){
+      FolderModel newFolder = FolderModel(name: subfolderDocument["name"]);
+      newFolder.parentFolder = folder;
+      folder.subFolders.add(newFolder);
+      loadFromFirestone(subfolderDocument.path, newFolder);
+    }
+    for(Document cardDocument in await cardsCollection.orderBy("frontDescription").get()){
+      CardModel newCard = CardModel(frontDescription: cardDocument["frontDescription"], backDescription: cardDocument["backDescription"]);
+      newCard.timeToStudy = DateTime.fromMillisecondsSinceEpoch(cardDocument["timeToStudy"]);
+      folder.cards.add(newCard);
+    }
+
+  }
+
   Future<void> createCardFirestore(FolderModel folder, CardModel newCard) async {
     String path = getSubfoldersFirestorePath(folder).substring(0,getSubfoldersFirestorePath(folder).length - 10);
     var collection = await Firestore.instance.collection("${path}cards");
