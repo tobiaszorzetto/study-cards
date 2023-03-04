@@ -80,7 +80,9 @@ class FolderController{
 
   void deleteCard(int cardIndex) {
     _deleteImages(folder.cards[cardIndex], folder);
+    FileManager.instance.deleteCardFirestore(folder, folder.cards[cardIndex]);
     folder.cards.remove(folder.cards[cardIndex]);
+
     FileManager.instance.saveCards();
   }
 
@@ -96,7 +98,8 @@ class FolderController{
   }
 
   deleteSubfolder(int subfolderIndex){
-    _deleteFolder(folder.subFolders[subfolderIndex]);
+    //_deleteFolder(folder.subFolders[subfolderIndex]);
+    FileManager.instance.deleteFolderFirestore(folder.subFolders[subfolderIndex]);
     folder.subFolders.remove(folder.subFolders[subfolderIndex]);
     FileManager.instance.saveCards();
   }

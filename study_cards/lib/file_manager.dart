@@ -67,6 +67,27 @@ class FileManager {
     }
   }
 
+  Future<void> deleteCardFirestore(FolderModel folder, CardModel card) async{
+    String path = getSubfoldersFirestorePath(folder).substring(0,getSubfoldersFirestorePath(folder).length - 10);
+    var collection = await Firestore.instance.collection("${path}cards");
+    collection.document(card.frontDescription).delete();
+  }
+
+  Future<void> deleteFolderFirestore(FolderModel folder) async{
+    String path = getSubfoldersFirestorePath(folder).substring(0,getSubfoldersFirestorePath(folder).length - 11);
+    var cardsCollection = Firestore.instance.collection("$path/cards");
+    for(Document cardDocument in await cardsCollection.orderBy("frontDescription").get()){
+      cardsCollection.document(cardDocument.id).delete();
+    }
+    for(FolderModel subfolder in folder.subFolders){
+      deleteFolderFirestore(subfolder);
+    }
+
+
+    await Firestore.instance.document(path).delete();
+  }
+
+
   Future<void> saveCards() async {
     final path = await getPath(); 
     final file = File("$path\\study-cards");
