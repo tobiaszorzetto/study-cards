@@ -77,7 +77,9 @@ class AddCardController{
 
   addCard(){
     _saveImages();
-    folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text));
+    var newCard = CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text);
+    folder.cards.add(newCard);
+    FileManager.instance.createCardFirestore(folder, newCard);
     FileManager.instance.saveCards();
   }
 

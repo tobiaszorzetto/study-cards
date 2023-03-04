@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:firedart/firedart.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:study_cards/models/card_model.dart';
 import 'package:study_cards/models/folder_model.dart';
 
 class FileManager {
@@ -14,24 +15,37 @@ class FileManager {
     return directory.path;
   }
 
-  Future<void> saveFolderFirestone(String name) async {
-    var colecao = await Firestore.instance.collection(getSubfoldersFirestonePath(FolderModel.instance));
-    print(colecao);
-  }
-
-  Future<void> createFolderFirestone(FolderModel folder) async {
-    String path = getSubfoldersFirestonePath(folder.parentFolder);
-    var collection = await Firestore.instance.collection(path);
-    collection.document(folder.name).set({
-      "name": folder.name,
+  Future<void> createCardFirestore(FolderModel folder, CardModel newCard) async {
+    String path = getSubfoldersFirestorePath(folder).substring(0,getSubfoldersFirestorePath(folder).length - 10);
+    var collection = await Firestore.instance.collection("${path}cards");
+    collection.document(newCard.frontDescription).set({
+      "frontDescription": newCard.frontDescription,
+      "backDescription": newCard.backDescription,
+      "timeToStudy": newCard.timeToStudy.millisecondsSinceEpoch,
     });
   }
 
-  String getSubfoldersFirestonePath(FolderModel? folder){
+  Future<void> createFolderFirestore(FolderModel folder) async {
+    String path = getCardsFirestorePath(folder.parentFolder);
+    var collection = await Firestore.instance.collection(path);
+    collection.document(folder.name).set({
+      "name": folder.name,
+      
+    });
+  }
+
+  String getSubfoldersFirestorePath(FolderModel? folder){
     if(folder == null){
       return "General";
     } else{
-      return "${getSubfoldersFirestonePath(folder.parentFolder)}/${folder.name}/subfolders";
+      return "${getSubfoldersFirestorePath(folder.parentFolder)}/${folder.name}/subfolders";
+    }
+  }
+  String getCardsFirestorePath(FolderModel? folder){
+    if(folder == null){
+      return "General";
+    } else{
+      return "${getSubfoldersFirestorePath(folder.parentFolder)}/${folder.name}/subfolders";
     }
   }
 
