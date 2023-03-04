@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:study_cards/controllers/folder_controller.dart';
 import 'package:study_cards/file_manager.dart';
@@ -46,9 +47,9 @@ class _FolderPageState extends State<FolderPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
-            onPressed: () => setState(() {
-              FileManager.instance.saveCards();
-            }),
+            onPressed: () async {
+              FileManager.instance.saveFolderFirestone("teste");
+            },
           ),
         ],
       ),

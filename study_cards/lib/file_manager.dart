@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firedart/firedart.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:study_cards/models/folder_model.dart';
 
@@ -13,6 +14,26 @@ class FileManager {
     return directory.path;
   }
 
+  Future<void> saveFolderFirestone(String name) async {
+    var colecao = await Firestore.instance.collection(getSubfoldersFirestonePath(FolderModel.instance));
+    print(colecao);
+  }
+
+  Future<void> createFolderFirestone(FolderModel folder) async {
+    String path = getSubfoldersFirestonePath(folder.parentFolder);
+    var collection = await Firestore.instance.collection(path);
+    collection.document(folder.name).set({
+      "name": folder.name,
+    });
+  }
+
+  String getSubfoldersFirestonePath(FolderModel? folder){
+    if(folder == null){
+      return "General";
+    } else{
+      return "${getSubfoldersFirestonePath(folder.parentFolder)}/${folder.name}/subfolders";
+    }
+  }
 
   Future<void> saveCards() async {
     final path = await getPath(); 

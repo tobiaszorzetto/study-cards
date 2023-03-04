@@ -43,6 +43,7 @@ class FolderController{
     FolderModel newSubFolder = FolderModel(name: folderCreateNameController.text, parentFolder: folder);
     folder.subFolders.add(newSubFolder);
     Directory(FileManager.instance.getFolderImagePath(newSubFolder)).create();
+    FileManager.instance.createFolderFirestone(newSubFolder);
     FileManager.instance.saveCards();
     folderCreateNameController.text = "";
     folderCreateValidated = true;

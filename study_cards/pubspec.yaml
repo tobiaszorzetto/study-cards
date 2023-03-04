@@ -7,6 +7,8 @@ environment:
   sdk: '>=2.19.1 <4.0.0'
 
 dependencies:
+  firedart: ^0.9.0+1
+  fluent_ui: ^4.4.0
   flutter:
     sdk: flutter
   flutter_spinbox: ^0.12.0
