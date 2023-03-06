@@ -5,6 +5,8 @@ import 'package:study_cards/controllers/add_card_controller.dart';
 import 'package:study_cards/models/folder_model.dart';
 import 'package:study_cards/views/folders_view.dart';
 
+import '../components/add_card_related/add_card_button.dart';
+import '../components/add_card_related/change_card_side_button.dart';
 import '../components/add_card_related/show_card.dart';
 
 class AddCardPage extends StatefulWidget {
@@ -69,6 +71,22 @@ class _AddCardPageState extends State<AddCardPage>
     });
   }
 
+  void _addCard() {
+    setState(() {
+      if (controller.frontTextController.text.replaceAll(" ", "") != "") {
+        controller.addCard();
+        Navigator.of(context).pop();
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => FolderPage(folder: controller.folder),
+          ),
+        );
+      } else {
+        controller.highlightFrontText = true;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,47 +111,17 @@ class _AddCardPageState extends State<AddCardPage>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _changeCardSideButton(),
+              ChangeCardSideButton(controller: controller),
               ShowCard(
                   controller: controller,
                   allowShowingImage: _allowShowingImage,
                   changeStroke: _changeStroke,
                   alternateEraser: _alternateEraser),
-              _addCardButton(),
+              AddCardButton(controller: controller, addCard: _addCard),
             ],
           ),
         ],
       ),
-    );
-  }
-
-  Widget _changeCardSideButton() {
-    return ElevatedButton.icon(
-        onPressed: () {
-          controller.changeCardSide();
-        },
-        icon: const Icon(Icons.change_circle_outlined),
-        label: controller.animationStatus == AnimationStatus.dismissed
-            ? const Text("front")
-            : const Text("back"));
-  }
-
-  Widget _addCardButton() {
-    return ElevatedButton(
-      onPressed: () => setState(() {
-        if (controller.frontTextController.text.replaceAll(" ", "") != "") {
-          controller.addCard();
-          Navigator.of(context).pop();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => FolderPage(folder: controller.folder),
-            ),
-          );
-        } else {
-          controller.highlightFrontText = true;
-        }
-      }),
-      child: const Text("Add"),
     );
   }
 }
