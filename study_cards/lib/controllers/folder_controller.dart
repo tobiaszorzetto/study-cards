@@ -106,6 +106,17 @@ class FolderController{
 
   // SHOW
 
+    String showDificultyLabel() {
+    if (cardDificulty == 0) {
+      return "Easy";
+    } else if (cardDificulty == 1) {
+      return "Medium";
+    } else if (cardDificulty == 2) {
+      return "Hard";
+    }
+    return "Try Again";
+  }
+
   Future<void> prepareImages(CardModel card) async {
     String folderPath = FileManager.instance.getFolderImagePath(folder);
     frontCardFile = File("$folderPath\\${card.frontDescription}0");
