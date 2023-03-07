@@ -7,7 +7,7 @@ import '../../views/folders_view.dart';
 
 class AddCardButton extends StatelessWidget {
   AddCardController controller;
-  Function() addCard;
+  void Function() addCard;
   AddCardButton({super.key, required this.controller, required this.addCard});
 
   @override
@@ -17,4 +17,4 @@ class AddCardButton extends StatelessWidget {
       child: const Text("Add"),
     );
   }
-  }
+}

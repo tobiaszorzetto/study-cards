@@ -1,0 +1,32 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-studycards-dev-221503-authRole",
+      "UnauthRoleArn": "arn:aws:iam::332021623072:role/amplify-studycards-dev-221503-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::332021623072:role/amplify-studycards-dev-221503-authRole",
+      "Region": "sa-east-1",
+      "DeploymentBucketName": "amplify-studycards-dev-221503-deployment",
+      "UnauthRoleName": "amplify-studycards-dev-221503-unauthRole",
+      "StackName": "amplify-studycards-dev-221503",
+      "StackId": "arn:aws:cloudformation:sa-east-1:332021623072:stack/amplify-studycards-dev-221503/53169cb0-bbbc-11ed-b311-0aef3b6b6226",
+      "AmplifyAppId": "d373vy17szftf2"
+    },
+    "categories": {
+      "auth": {
+        "studycards65df858a": {}
+      },
+      "storage": {
+        "studycardsStorage": {}
+      },
+      "function": {
+        "studycards5541d1fc": {
+          "deploymentBucketName": "amplify-studycards-dev-221503-deployment",
+          "s3Key": "amplify-builds/studycards5541d1fc-384f34487257334d6f52-build.zip"
+        }
+      },
+      "api": {
+        "studyCards": {}
+      }
+    }
+  }
+}
