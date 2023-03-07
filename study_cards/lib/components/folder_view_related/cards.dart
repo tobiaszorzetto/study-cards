@@ -4,7 +4,7 @@ import '../../models/card_model.dart';
 import 'add_card_button.dart';
 
 class Cards extends StatelessWidget {
-  void Function() gotoAddCardPage;
+  Function() gotoAddCardPage;
   void Function(int) showDeleteCardDialog;
   void Function(BuildContext, CardModel) showCardDialog;
 

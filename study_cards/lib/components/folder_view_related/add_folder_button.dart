@@ -7,7 +7,7 @@ class AddFolderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => addFolder,
+      onPressed: () => addFolder(),
       child: const Icon(Icons.add),
     );
   }

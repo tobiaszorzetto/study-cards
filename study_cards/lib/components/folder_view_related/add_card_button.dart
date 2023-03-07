@@ -9,7 +9,7 @@ class GotoAddCardButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => gotoAddCardPage,
+      onPressed: () => gotoAddCardPage(),
       child: const Icon(Icons.add),
     );
   }

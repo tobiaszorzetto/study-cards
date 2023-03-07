@@ -93,11 +93,7 @@ class _FolderPageState extends State<FolderPage> {
       body: SizedBox(
         child: Column(
           children: [
-<<<<<<< HEAD
             CardsToStudy(folderController: folderController),
-=======
-            Expanded(flex: 2, child: _CardsToStudy()),
->>>>>>> 00176f3e6881f7a409e8270e2b5462360435840a
             const Divider(),
             //const SizedBox(height: 50,),
             SubFolders(controller: folderController, gotoFolder: gotoFolder, addFolder: addFolder, showDeleteFolderDialog: _showDeleteFolderDialog),
@@ -109,67 +105,6 @@ class _FolderPageState extends State<FolderPage> {
     );
   }
 
-<<<<<<< HEAD
-=======
-  Widget _CardsToStudy() {
-    folderController.setCardsToStudy();
-    return Column(
-      children: [
-        Expanded(
-          flex: 4,
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 10,
-            margin: const EdgeInsets.all(8),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 4,
-                    child: Container(
-                      child: Text(
-                        "${folderController.cardsToStudy.length}",
-                        style: TextStyle(
-                          fontSize: 100,
-                          fontWeight: FontWeight.bold,
-                          height:
-                              0, //line height 200%, 1= 100%, were 0.9 = 90% of actual line height
-                          color: folderController.cardsToStudy.isNotEmpty
-                              ? Colors.redAccent
-                              : Colors.green, //font color
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                      child: Text(
-                    "cards pending studying",
-                    style: Theme.of(context).textTheme.titleSmall,
-                  )),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: () => folderController.cardsToStudy.isNotEmpty
-                ? Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => StudyCardsPage(
-                        folder: folderController.folder,
-                        cardsToStudy: folderController.cardsToStudy),
-                  ))
-                : {},
-            child: const Text("Study Cards"),
-          ),
-        )
-      ],
-    );
-  }
->>>>>>> 00176f3e6881f7a409e8270e2b5462360435840a
 
 
   _createFolderDialog() {
