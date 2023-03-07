@@ -55,7 +55,7 @@ class _FolderPageState extends State<FolderPage> {
       body: SizedBox(
         child: Column(
           children: [
-            Expanded(flex: 2, child: _showCardsToStudy()),
+            Expanded(flex: 2, child: _CardsToStudy()),
             const Divider(),
             //const SizedBox(height: 50,),
             Expanded(flex: 3, child: _showFolders(context)),
@@ -67,7 +67,7 @@ class _FolderPageState extends State<FolderPage> {
     );
   }
 
-  Widget _showCardsToStudy() {
+  Widget _CardsToStudy() {
     folderController.setCardsToStudy();
     return Column(
       children: [
