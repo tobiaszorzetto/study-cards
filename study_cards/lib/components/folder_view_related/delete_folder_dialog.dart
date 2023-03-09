@@ -2,13 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:study_cards/controllers/folder_controller.dart';
 
 class DeleteFolderDialog extends StatelessWidget {
-  const DeleteFolderDialog({super.key});
+  final int folderIndex;
+  final FolderController folderController;
+  void Function(int, FolderController) onDeleteFolder;
+
+  DeleteFolderDialog({
+    super.key,
+    required this.folderIndex,
+    required this.folderController,
+    required this.onDeleteFolder,
+  });
 
   @override
   Widget build(BuildContext context) {
-    showDialog(
+    return showDialog(
         context: context,
         builder: (context) => SizedBox(
               child: AlertDialog(
@@ -20,10 +30,7 @@ class DeleteFolderDialog extends StatelessWidget {
                       onPressed: () => Navigator.of(context).pop(),
                       child: const Text("Cancel")),
                   ElevatedButton(
-                      onPressed: () => setState(() {
-                            Navigator.of(context).pop();
-                            folderController.deleteSubfolder(folderIndex);
-                          }),
+                      onPressed: () => ,
                       child: const Text("OK")),
                 ],
               ),

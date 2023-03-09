@@ -64,6 +64,13 @@ class _FolderPageState extends State<FolderPage> {
     });
   }
 
+  void onDeleteFolder(int folderIndex, FolderController folderController) {
+    setState(() {
+      Navigator.of(context).pop();
+      folderController.deleteSubfolder(folderIndex);
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -96,16 +103,22 @@ class _FolderPageState extends State<FolderPage> {
             CardsToStudy(folderController: folderController),
             const Divider(),
             //const SizedBox(height: 50,),
-            SubFolders(controller: folderController, gotoFolder: gotoFolder, addFolder: addFolder, showDeleteFolderDialog: _showDeleteFolderDialog),
+            SubFolders(
+                controller: folderController,
+                gotoFolder: gotoFolder,
+                addFolder: addFolder,
+                showDeleteFolderDialog: _showDeleteFolderDialog),
             const Divider(),
-            Cards(gotoAddCardPage: gotoAddCardPage, controller: folderController, showDeleteCardDialog: _showDeleteCardDialog, showCardDialog: _showCardDialog),
+            Cards(
+                gotoAddCardPage: gotoAddCardPage,
+                controller: folderController,
+                showDeleteCardDialog: _showDeleteCardDialog,
+                showCardDialog: _showCardDialog),
           ],
         ),
       ),
     );
   }
-
-
 
   _createFolderDialog() {
     return showDialog(
@@ -156,7 +169,6 @@ class _FolderPageState extends State<FolderPage> {
             ));
   }
 
- 
   Future<void> _showCardDialog(BuildContext context, CardModel card) async {
     await folderController.prepareImages(card);
 
@@ -254,8 +266,6 @@ class _FolderPageState extends State<FolderPage> {
       folderController.createTimeToStudy(card);
     });
   }
-
-
 
   Widget _showCardInDialog(
       bool fileExists, File file, CardModel card, String text) {
