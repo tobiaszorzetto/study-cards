@@ -1,17 +1,12 @@
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:study_cards/controllers/study_cards_controller.dart';
-
-import '../../models/card_model.dart';
+import 'dialog_image.dart';
 
 class FrontCard extends StatelessWidget {
-  Function changeCardSide;
+  void Function() changeCardSide;
   StudyCardsController controller;
-  FrontCard({super.key, required this.controller, required this.changeCardSide});
+  FrontCard(
+      {super.key, required this.controller, required this.changeCardSide});
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +19,12 @@ class FrontCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                  flex: 16,
-                  child: _showImageInDialog(
-                      controller.frontCardFile,
-                      controller.cardsToStudy[controller.indexCardShowing],
-                      controller.cardsToStudy[controller.indexCardShowing]
-                          .frontDescription)),
+                flex: 16,
+                child: DialogImage(
+                    file: controller.frontCardFile,
+                    text: controller.cardsToStudy[controller.indexCardShowing]
+                        .frontDescription),
+              ),
               Expanded(
                 flex: 1,
                 child: ElevatedButton(
@@ -41,18 +36,5 @@ class FrontCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-    Widget _showImageInDialog(File? file, CardModel card, String text) {
-    if (file != null) {
-      return Column(
-        children: [
-          Expanded(flex: 1, child: Text(text)),
-          Expanded(flex: 8, child: Image.file(file)),
-        ],
-      );
-    } else {
-      return Text(text);
-    }
   }
 }
