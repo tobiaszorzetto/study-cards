@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:study_cards/components/study_cards_related/dificulty_button.dart';
+import 'package:study_cards/components/study_cards_related/front_card.dart';
 import 'package:study_cards/controllers/study_cards_controller.dart';
 import 'package:study_cards/models/card_model.dart';
 import 'package:study_cards/views/folders_view.dart';
@@ -23,6 +25,18 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
 
   _StudyCardsPageState(folder, cardsToStudy) {
     controller = StudyCardsController(folder, cardsToStudy);
+  }
+
+  void updateCard(Duration duration) {
+    setState(() {
+      controller.updateCard(duration);
+    });
+  }
+
+  void changeCardSide() {
+    setState(() {
+      controller.showAnswer = !controller.showAnswer;
+    });
   }
 
   @override
@@ -71,7 +85,7 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
           width: MediaQuery.of(context).size.width / 2,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [controller.showAnswer ? _showBack() : _showFront()],
+            children: [controller.showAnswer ? _showBack() : FrontCard(controller: controller,changeCardSide: changeCardSide,)],
           ),
         ),
       ],
@@ -89,9 +103,7 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                    onPressed: () => setState(() {
-                          controller.showAnswer = !controller.showAnswer;
-                        }),
+                    onPressed: () => changeCardSide(),
                     child: const Icon(Icons.arrow_upward)),
               ),
               Expanded(
@@ -109,67 +121,34 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
     );
   }
 
-  Visibility _showFront() {
-    return Visibility(
-      visible: !controller.showAnswer,
-      child: Expanded(
-        child: Card(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                  flex: 16,
-                  child: _showImageInDialog(
-                      controller.frontCardFile,
-                      controller.cardsToStudy[controller.indexCardShowing],
-                      controller.cardsToStudy[controller.indexCardShowing]
-                          .frontDescription)),
-              Expanded(
-                flex: 1,
-                child: ElevatedButton(
-                    onPressed: () => setState(() {
-                          controller.showAnswer = !controller.showAnswer;
-                        }),
-                    child: const Icon(Icons.arrow_downward)),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Row _showDificultyOptions() {
     return Row(
       children: [
-        _dificulltyButton(const Duration(minutes: 0), "Try again", "0 min"),
-        _dificulltyButton(const Duration(minutes: 10), "Hard", "10 min"),
-        _dificulltyButton(const Duration(days: 1), "Medium", "1 day"),
-        _dificulltyButton(const Duration(days: 6), "Easy", "6 days"),
+        DificultyButton(
+          duration: const Duration(minutes: 0),
+          name: "Try again",
+          durationString: "0 min",
+          updateCard: updateCard,
+        ),
+        DificultyButton(
+            duration: const Duration(minutes: 10),
+            name: "Hard",
+            durationString: "10 min",
+            updateCard: updateCard),
+        DificultyButton(
+            duration: const Duration(days: 1),
+            name: "Medium",
+            durationString: "1 day",
+            updateCard: updateCard),
+        DificultyButton(
+          duration: const Duration(days: 6),
+          name: "Easy",
+          durationString: "6 days",
+          updateCard: updateCard,
+        ),
       ],
     );
-  }
-
-  Expanded _dificulltyButton(
-      Duration duration, String name, String durationString) {
-    return Expanded(
-        child: ElevatedButton(
-            onPressed: () => setState(() {
-                  controller.cardsToStudy[controller.indexCardShowing]
-                      .timeToStudy = DateTime.now().add(duration);
-                  FileManager.instance.saveCards();
-                  controller.cardsStudied.add(controller.indexCardShowing);
-                  controller.nextCard();
-                }),
-            child: ListTile(
-              title: Text(
-                name,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-              ),
-              subtitle: Text(durationString),
-            )));
   }
 
   Widget _showImageInDialog(File? file, CardModel card, String text) {
