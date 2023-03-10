@@ -4,36 +4,36 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:study_cards/controllers/folder_controller.dart';
 
-class DeleteFolderDialog extends StatelessWidget {
-  final int folderIndex;
+class DeleteObjectDialog extends StatelessWidget {
+  final int index;
   final FolderController folderController;
-  void Function(int, FolderController) onDeleteFolder;
+  final String objName;
+  void Function(int, BuildContext) onDeleteObject;
 
-  DeleteFolderDialog({
+  DeleteObjectDialog({
     super.key,
-    required this.folderIndex,
+    required this.index,
     required this.folderController,
-    required this.onDeleteFolder,
+    required this.onDeleteObject,
+    required this.objName,
   });
 
   @override
   Widget build(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (context) => SizedBox(
-              child: AlertDialog(
-                content: StatefulBuilder(
-                    builder: (context, setState) =>
-                        const Text("Do you want to delete this folder?")),
-                actions: [
-                  ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("Cancel")),
-                  ElevatedButton(
-                      onPressed: () => ,
-                      child: const Text("OK")),
-                ],
-              ),
-            ));
+    return SizedBox(
+      child: AlertDialog(
+        content: StatefulBuilder(
+            builder: (context, setState) =>
+                Text("Do you want to delete this $objName?")),
+        actions: [
+          ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancel")),
+          ElevatedButton(
+              onPressed: () => onDeleteObject(index, context),
+              child: const Text("OK")),
+        ],
+      ),
+    );
   }
 }
