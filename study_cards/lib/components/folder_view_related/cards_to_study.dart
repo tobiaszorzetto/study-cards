@@ -13,8 +13,8 @@ class CardsToStudy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     folderController.setCardsToStudy();
-    return Expanded(
-      flex: 2,
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.25,
       child: Column(
         children: [
           Expanded(
@@ -24,18 +24,21 @@ class CardsToStudy extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               elevation: 10,
-              margin: const EdgeInsets.all(8),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+              margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.3,
+                vertical: MediaQuery.of(context).size.height * 0.01,
+              ),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.2,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                      flex: 4,
-                      child: Container(
+                      flex: 3,
+                      child: FittedBox(
                         child: Text(
                           "${folderController.cardsToStudy.length}",
                           style: TextStyle(
-                            fontSize: 100,
                             fontWeight: FontWeight.bold,
                             height:
                                 0, //line height 200%, 1= 100%, were 0.9 = 90% of actual line height
@@ -47,10 +50,19 @@ class CardsToStudy extends StatelessWidget {
                       ),
                     ),
                     Expanded(
-                        child: Text(
-                      "cards pending studying",
-                      style: Theme.of(context).textTheme.titleSmall,
-                    )),
+                      child: Container(
+                        padding: EdgeInsets.only(
+                          right: MediaQuery.of(context).size.width * 0.01,
+                          left: MediaQuery.of(context).size.width * 0.01,
+                        ),
+                        child: FittedBox(
+                          child: Text(
+                            "Cards pending studying",
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
