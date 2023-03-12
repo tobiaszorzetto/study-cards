@@ -73,7 +73,7 @@ class _AddCardPageState extends State<AddCardPage>
 
   void _addCard() {
     setState(() {
-      if (controller.frontTextController.text.replaceAll(" ", "") != "") {
+      if (controller.frontTextController.text.replaceAll(" ", "") != "" && controller.validateCard()) {
         controller.addCard();
         Navigator.of(context).pop();
         Navigator.of(context).push(

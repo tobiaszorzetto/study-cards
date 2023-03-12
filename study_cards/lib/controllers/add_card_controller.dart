@@ -36,7 +36,18 @@ class AddCardController{
 
   bool highlightFrontText = false;
 
+  bool createCardValidated = true;
+
   AddCardController(this.folder);
+
+  bool validateCard(){
+    if(folder.cards.map((e) => e.frontDescription).contains(frontTextController.text)){
+      createCardValidated = false;
+      return false;
+    }
+    createCardValidated = true;
+    return true;
+  }
 
   void changeCardSide(){
     updateImage();
