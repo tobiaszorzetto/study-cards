@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
 import '../../controllers/add_card_controller.dart';
@@ -23,24 +24,21 @@ class ShowCard extends StatelessWidget {
     return SizedBox(
       height: MediaQuery.of(context).size.height / 2,
       width: MediaQuery.of(context).size.width / 2,
-      child: Transform(
-        alignment: FractionalOffset.center,
-        transform: Matrix4.identity()
-          ..setEntry(2, 1, 0.0015)
-          ..rotateY(pi * controller.animation.value),
-        child: controller.animation.value <= 0.5
-            ? CardFront(
-                controller: controller,
-                allowShowingImage: allowShowingImage,
-                alternateEraser: alternateEraser,
-                changeStroke: changeStroke,
-              )
-            : CardBack(
-                controller: controller,
-                allowShowingImage: allowShowingImage,
-                alternateEraser: alternateEraser,
-                changeStroke: changeStroke,
-              ),
+      child: FlipCard(
+        controller: controller.flipCardController,
+        flipOnTouch: false,
+        front: CardFront(
+                    controller: controller,
+                    allowShowingImage: allowShowingImage,
+                    alternateEraser: alternateEraser,
+                    changeStroke: changeStroke,
+                  ),
+        back: CardBack(
+                    controller: controller,
+                    allowShowingImage: allowShowingImage,
+                    alternateEraser: alternateEraser,
+                    changeStroke: changeStroke,
+                  ),
       ),
     );
   }

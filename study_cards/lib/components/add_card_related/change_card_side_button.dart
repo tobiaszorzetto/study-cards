@@ -4,18 +4,23 @@ import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../controllers/add_card_controller.dart';
 
-class ChangeCardSideButton extends StatelessWidget {
+class ChangeCardSideButton extends StatefulWidget {
   AddCardController controller;
   ChangeCardSideButton({super.key, required this.controller});
 
   @override
+  State<ChangeCardSideButton> createState() => _ChangeCardSideButtonState();
+}
+
+class _ChangeCardSideButtonState extends State<ChangeCardSideButton> {
+  @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-        onPressed: () {
-          controller.changeCardSide();
-        },
+        onPressed: () => setState(() {
+          widget.controller.changeCardSide();
+        }),
         icon: const Icon(Icons.change_circle_outlined),
-        label: controller.animationStatus == AnimationStatus.dismissed
+        label: widget.controller.showFrontSide
             ? const Text("front")
             : const Text("back"));
   }

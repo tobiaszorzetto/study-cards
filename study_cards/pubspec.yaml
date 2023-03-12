@@ -7,6 +7,7 @@ environment:
   sdk: '>=2.19.1 <4.0.0'
 
 dependencies:
+  flip_card: ^0.7.0
   flutter:
     sdk: flutter
   flutter_spinbox: ^0.12.0
