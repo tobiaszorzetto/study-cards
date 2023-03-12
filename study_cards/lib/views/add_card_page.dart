@@ -64,6 +64,12 @@ class _AddCardPageState extends State<AddCardPage>
     });
   }
 
+  void changeSide(){
+    setState(() {
+      controller.changeCardSide();
+    });
+  }
+
   void _changeStroke(double value, ScribbleNotifier notifier) {
     setState(() {
       controller.stroke = value;
@@ -111,7 +117,7 @@ class _AddCardPageState extends State<AddCardPage>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ChangeCardSideButton(controller: controller),
+              ChangeCardSideButton(controller: controller, changeSide: changeSide,),
               ShowCard(
                   controller: controller,
                   allowShowingImage: _allowShowingImage,

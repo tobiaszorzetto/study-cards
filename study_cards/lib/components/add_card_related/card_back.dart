@@ -23,6 +23,16 @@ class CardBack extends StatelessWidget {
       child: Column(
         children: [
           TextField(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Color.fromARGB(255, 146, 146, 146)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Color.fromARGB(255, 146, 146, 146)),
+              ),
+            ),
             controller: controller.backTextController,
             maxLines: null,
           ),
