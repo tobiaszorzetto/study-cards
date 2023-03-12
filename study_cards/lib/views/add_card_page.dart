@@ -64,6 +64,12 @@ class _AddCardPageState extends State<AddCardPage>
     });
   }
 
+  void changeSide(){
+    setState(() {
+      controller.changeCardSide();
+    });
+  }
+
   void _changeStroke(double value, ScribbleNotifier notifier) {
     setState(() {
       controller.stroke = value;
@@ -73,7 +79,7 @@ class _AddCardPageState extends State<AddCardPage>
 
   void _addCard() {
     setState(() {
-      if (controller.frontTextController.text.replaceAll(" ", "") != "") {
+      if (controller.frontTextController.text.replaceAll(" ", "") != "" && controller.validateCard()) {
         controller.addCard();
         Navigator.of(context).pop();
         Navigator.of(context).push(
@@ -111,7 +117,7 @@ class _AddCardPageState extends State<AddCardPage>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ChangeCardSideButton(controller: controller),
+              ChangeCardSideButton(controller: controller, changeSide: changeSide,),
               ShowCard(
                   controller: controller,
                   allowShowingImage: _allowShowingImage,

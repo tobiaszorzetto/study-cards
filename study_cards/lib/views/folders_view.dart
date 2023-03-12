@@ -27,6 +27,12 @@ class _FolderPageState extends State<FolderPage> {
     folderController = FolderController(folder);
   }
 
+  void updateCard(Duration duration) {
+    setState(() {
+      folderController.updateCard(duration);
+    });
+  }
+
   addFolder() {
     setState(() {
       folderController.folderCreateValidated = true;
@@ -146,7 +152,7 @@ class _FolderPageState extends State<FolderPage> {
     // ignore: use_build_context_synchronously
     showDialog(
         context: context,
-        builder: (context) => CardDialog(controller: folderController, card: card, updateCardsToStudy: _updateCardsToStudy),
+        builder: (context) => CardDialog(controller: folderController, card: card, updateCardsToStudy: _updateCardsToStudy, updateCard: updateCard,),
     );
   }
 

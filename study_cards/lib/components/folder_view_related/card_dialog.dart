@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:study_cards/components/study_cards_related/dificulty_list.dart';
 import 'package:study_cards/controllers/folder_controller.dart';
 import 'package:study_cards/models/card_model.dart';
 
@@ -11,11 +12,13 @@ class CardDialog extends StatelessWidget {
   final CardModel card;
   final FolderController controller;
   Function(CardModel) updateCardsToStudy;
+  Function(Duration) updateCard;
   CardDialog(
       {super.key,
       required this.controller,
       required this.card,
-      required this.updateCardsToStudy});
+      required this.updateCardsToStudy,
+      required this.updateCard});
 
   @override
   Widget build(BuildContext context) {
@@ -71,29 +74,7 @@ class CardDialog extends StatelessWidget {
                             ),
                             Visibility(
                               visible: controller.showBack,
-                              child: Row(
-                                children: [
-                                  Slider(
-                                      min: 0,
-                                      max: 3,
-                                      value:
-                                          controller.cardDificulty.toDouble(),
-                                      onChanged: (value) => setState(
-                                            () {
-                                              controller.cardDificulty =
-                                                  value.toInt();
-                                              controller.setTimeToStudy();
-                                            },
-                                          )),
-                                  Text(controller.showDificultyLabel()),
-                                  Text(controller.timeToStudy.toString()),
-                                  ElevatedButton(
-                                      onPressed: () => setState(() {
-                                            updateCardsToStudy(card);
-                                          }),
-                                      child: const Text("OK"))
-                                ],
-                              ),
+                              child: DificultyList(updateCard: updateCard,)
                             ),
                           ],
                         ),

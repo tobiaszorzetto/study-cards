@@ -67,6 +67,7 @@ class Cards extends StatelessWidget {
                       ),
                       onTap: () {
                         controller.showBack = false;
+                        controller.indexCardShowing = index;
                         showCardDialog(context, controller.folder.cards[index]);
                       },
                     );

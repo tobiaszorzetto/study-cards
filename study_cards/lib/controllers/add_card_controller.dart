@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
@@ -15,7 +16,7 @@ class AddCardController{
   TextEditingController frontTextController = TextEditingController();
   TextEditingController backTextController = TextEditingController();
   double stroke = 1;
-
+  
   bool eraseSelected = false;
 
   bool showFrontSide = true;
@@ -36,17 +37,25 @@ class AddCardController{
 
   bool highlightFrontText = false;
 
+  bool createCardValidated = true;
+
+  FlipCardController flipCardController = FlipCardController();
+
   AddCardController(this.folder);
 
-  void changeCardSide(){
-    updateImage();
-    if (animationStatus == AnimationStatus.dismissed) {
-      showFrontSide = false;
-      animationController.forward();
-    } else {
-      showFrontSide = true;
-      animationController.reverse();
+  bool validateCard(){
+    if(folder.cards.map((e) => e.frontDescription).contains(frontTextController.text)){
+      createCardValidated = false;
+      return false;
     }
+    createCardValidated = true;
+    return true;
+  }
+
+  Future<void> changeCardSide() async{
+    updateImage();
+    await flipCardController.toggleCard();
+    showFrontSide = !showFrontSide;
   }
 
   Future<void> updateImage() async{
@@ -65,11 +74,11 @@ class AddCardController{
     await updateImage();
 
     if(imageFront != null && showImageFront){
-      File fileFront = File("${FileManager.instance.getFolderImagePath(folder)}\\${frontTextController.text}0");
+      File fileFront = File("${FileManager.instance.getFolderImagePath(folder)}\\${frontTextController.text.replaceAll(RegExp('[^A-Za-z0-9]'), '')}0");
       fileFront.writeAsBytes(imageFront!.buffer.asUint8List());  
     }
     if(imageBack != null && showImageBack){
-      File fileBack = File("${FileManager.instance.getFolderImagePath(folder)}\\${frontTextController.text}1");
+      File fileBack = File("${FileManager.instance.getFolderImagePath(folder)}\\${frontTextController.text.replaceAll(RegExp('[^A-Za-z0-9]'), '')}1");
       fileBack.writeAsBytes(imageBack!.buffer.asUint8List()); 
     }
 

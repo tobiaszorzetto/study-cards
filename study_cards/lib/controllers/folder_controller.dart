@@ -21,7 +21,8 @@ class FolderController{
   int cardDificulty = 0 ;
   Duration timeToStudy = const Duration(minutes:0);
 
-  
+  int indexCardShowing = 0;
+
   List<CardModel> cardsToStudy = [];
 
   FolderController(this.folder);
@@ -67,8 +68,8 @@ class FolderController{
 
   Future<void> _deleteImages(CardModel card, FolderModel folder) async{
     String folderPath = FileManager.instance.getFolderImagePath(folder);
-    File file0 = File("$folderPath\\${card.frontDescription}0");
-    File file1 = File("$folderPath\\${card.frontDescription}1");
+    File file0 = File("$folderPath\\${card.frontDescription.replaceAll(RegExp('[^A-Za-z0-9]'), '')}0");
+    File file1 = File("$folderPath\\${card.frontDescription.replaceAll(RegExp('[^A-Za-z0-9]'), '')}1");
     if(await file0.exists()){
       file0.delete();
     }
@@ -115,9 +116,9 @@ class FolderController{
 
   Future<void> prepareImages(CardModel card) async {
     String folderPath = FileManager.instance.getFolderImagePath(folder);
-    frontCardFile = File("$folderPath\\${card.frontDescription}0");
+    frontCardFile = File("$folderPath\\${card.frontDescription.replaceAll(RegExp('[^A-Za-z0-9]'), '')}0");
     frontCardExists = await frontCardFile.exists(); 
-    backCardFile = File("$folderPath\\${card.frontDescription}1");
+    backCardFile = File("$folderPath\\${card.frontDescription.replaceAll(RegExp('[^A-Za-z0-9]'), '')}1");
     backCardExists = await backCardFile.exists(); 
   }
 
@@ -131,6 +132,11 @@ class FolderController{
     } else{
       const timeToStudy = Duration(minutes: 0);
     }
+  }
+
+  void updateCard(Duration duration) {
+    folder.cards[indexCardShowing].timeToStudy = DateTime.now().add(duration);
+    FileManager.instance.saveCards();
   }
   
 }
