@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:scribble/scribble.dart';
 import 'package:study_cards/file_manager.dart';
-import 'package:study_cards/views/add_card_page.dart';
 import 'package:study_cards/views/folders_view.dart';
-import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 
 import 'models/folder_model.dart';
 

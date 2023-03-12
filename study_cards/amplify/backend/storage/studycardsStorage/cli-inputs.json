@@ -1,0 +1,14 @@
+{
+  "resourceName": "studycardsStorage",
+  "policyUUID": "64650b3e",
+  "bucketName": "studycardsb957f462d51d44c2810c1075577cabfe",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}
