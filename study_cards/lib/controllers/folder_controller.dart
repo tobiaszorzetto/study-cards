@@ -21,7 +21,8 @@ class FolderController{
   int cardDificulty = 0 ;
   Duration timeToStudy = const Duration(minutes:0);
 
-  
+  int indexCardShowing = 0;
+
   List<CardModel> cardsToStudy = [];
 
   FolderController(this.folder);
@@ -131,6 +132,11 @@ class FolderController{
     } else{
       const timeToStudy = Duration(minutes: 0);
     }
+  }
+
+  void updateCard(Duration duration) {
+    folder.cards[indexCardShowing].timeToStudy = DateTime.now().add(duration);
+    FileManager.instance.saveCards();
   }
   
 }
