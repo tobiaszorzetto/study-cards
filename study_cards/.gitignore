@@ -33,7 +33,8 @@ migrate_working_dir/
 /build/
 
 firebase_options.dart
-amplifyconfiguration.dart
+
+lib/amplifyconfiguration.dart
 # Symbolication related
 app.*.symbols
 
