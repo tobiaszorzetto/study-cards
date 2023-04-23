@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:study_cards/models/card_model.dart';
 import '../../controllers/folder_controller.dart';
 import '../../views/study_cards_page.dart';
 
@@ -59,11 +60,7 @@ class CardsToStudy extends StatelessWidget {
           Expanded(
             child: ElevatedButton(
               onPressed: () => folderController.cardsToStudy.isNotEmpty
-                  ? Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => StudyCardsPage(
-                          folder: folderController.folder,
-                          cardsToStudy: folderController.cardsToStudy),
-                    ))
+                  ? goToStudy(context)
                   : {},
               child: const Text("Study Cards"),
             ),
@@ -71,5 +68,14 @@ class CardsToStudy extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  goToStudy(BuildContext context) async {
+
+    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => StudyCardsPage(
+                          folder: folderController.folder,
+                          cardsToStudy: folderController.cardsToStudy),
+                    ));
   }
 }

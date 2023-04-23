@@ -1,7 +1,12 @@
 
+import 'dart:typed_data';
+
 class CardModel {
   String frontDescription;
   String backDescription;
+
+  Uint8List? frontCardData;
+  Uint8List? backCardData;
 
   DateTime timeToStudy = DateTime.now();
 

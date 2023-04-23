@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 
@@ -10,11 +11,6 @@ class FolderController{
 
   bool showBack = false;
   FolderModel folder;
-
-  late File frontCardFile;
-  late File backCardFile;
-  late bool frontCardExists;
-  late bool backCardExists;
 
   TextEditingController folderCreateNameController = TextEditingController(text: "");
   bool folderCreateValidated = true;
@@ -94,7 +90,6 @@ class FolderController{
       await _deleteImages(card, folderDeleted);
     }
     await Directory(FileManager.instance.getFolderImagePath(folderDeleted)).delete();
-
   }
 
   deleteSubfolder(int subfolderIndex){
@@ -115,14 +110,6 @@ class FolderController{
       return "Hard";
     }
     return "Try Again";
-  }
-
-  Future<void> prepareImages(CardModel card) async {
-    String folderPath = FileManager.instance.getFolderImagePath(folder);
-    frontCardFile = File("$folderPath\\${card.frontDescription}0");
-    frontCardExists = await frontCardFile.exists(); 
-    backCardFile = File("$folderPath\\${card.frontDescription}1");
-    backCardExists = await backCardFile.exists(); 
   }
 
   void setTimeToStudy(){

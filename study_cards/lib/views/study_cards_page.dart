@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:study_cards/controllers/study_cards_controller.dart';
@@ -97,7 +98,7 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
               Expanded(
                   flex: 10,
                   child: _showImageInDialog(
-                      controller.backCardFile,
+                      controller.cardsToStudy[controller.indexCardShowing].backCardData,
                       controller.cardsToStudy[controller.indexCardShowing],
                       controller.cardsToStudy[controller.indexCardShowing]
                           .backDescription)),
@@ -121,7 +122,7 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
               Expanded(
                   flex: 16,
                   child: _showImageInDialog(
-                      controller.frontCardFile,
+                      controller.cardsToStudy[controller.indexCardShowing].frontCardData,
                       controller.cardsToStudy[controller.indexCardShowing],
                       controller.cardsToStudy[controller.indexCardShowing]
                           .frontDescription)),
@@ -172,12 +173,12 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
             )));
   }
 
-  Widget _showImageInDialog(File? file, CardModel card, String text) {
-    if (file != null) {
+  Widget _showImageInDialog(Uint8List? data, CardModel card, String text) {
+    if (data != null) {
       return Column(
         children: [
           Expanded(flex: 1, child: Text(text)),
-          Expanded(flex: 8, child: Image.file(file)),
+          Expanded(flex: 8, child: Image.memory(data)),
         ],
       );
     } else {

@@ -1,17 +1,9 @@
-import 'dart:io';
-
-import 'package:firedart/firedart.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:study_cards/components/add_card_related/add_card_button.dart';
-import 'package:study_cards/components/folder_view_related/add_card_button.dart';
 import 'package:study_cards/components/folder_view_related/subfolders.dart';
 import 'package:study_cards/controllers/folder_controller.dart';
-import 'package:study_cards/file_manager.dart';
 import 'package:study_cards/models/folder_model.dart';
 import 'package:study_cards/views/add_card_page.dart';
-import 'package:study_cards/views/study_cards_page.dart';
-
-import '../components/folder_view_related/cards.dart';
 import '../components/folder_view_related/cards.dart';
 import '../components/folder_view_related/cards_to_study.dart';
 import '../models/card_model.dart';
@@ -159,8 +151,6 @@ class _FolderPageState extends State<FolderPage> {
 
  
   Future<void> _showCardDialog(BuildContext context, CardModel card) async {
-    await folderController.prepareImages(card);
-
     // ignore: use_build_context_synchronously
     showDialog(
         context: context,
@@ -179,8 +169,7 @@ class _FolderPageState extends State<FolderPage> {
                             height: MediaQuery.of(context).size.height / 2,
                             width: MediaQuery.of(context).size.width / 2,
                             child: _showCardInDialog(
-                                folderController.frontCardExists,
-                                folderController.frontCardFile,
+                                card.frontCardData,
                                 card,
                                 card.frontDescription),
                           ),
@@ -209,8 +198,7 @@ class _FolderPageState extends State<FolderPage> {
                               height: MediaQuery.of(context).size.height / 2,
                               width: MediaQuery.of(context).size.width / 2,
                               child: _showCardInDialog(
-                                  folderController.backCardExists,
-                                  folderController.backCardFile,
+                                  card.backCardData,
                                   card,
                                   card.backDescription),
                             ),
@@ -258,13 +246,12 @@ class _FolderPageState extends State<FolderPage> {
 
 
 
-  Widget _showCardInDialog(
-      bool fileExists, File file, CardModel card, String text) {
-    if (fileExists) {
+  Widget _showCardInDialog( Uint8List? file, CardModel card, String text) {
+    if (file!=null) {
       return Column(
         children: [
           Text(text),
-          Expanded(child: Image.file(file)),
+          Expanded(child: Image.memory(file)),
         ],
       );
     }
