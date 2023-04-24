@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
@@ -10,6 +12,8 @@ import '../models/card_model.dart';
 import '../models/folder_model.dart';
 
 class AddCardController{
+  User user;
+
   late ScribbleNotifier notifierFront;
   late ScribbleNotifier notifierBack;
   TextEditingController frontTextController = TextEditingController();
@@ -36,7 +40,10 @@ class AddCardController{
 
   bool highlightFrontText = false;
 
-  AddCardController(this.folder);
+  bool hasFront = false;
+  bool hasBack = false;
+
+  AddCardController(this.folder, this.user);
 
   void changeCardSide(){
     updateImage();
@@ -61,24 +68,28 @@ class AddCardController{
     }
   }
 
-  Future<void> _saveImages() async {
+ Future<void> _saveImages() async {
     await updateImage();
-
+    var storageRef = FirebaseStorage.instance.ref();
+    var imagesRef = storageRef.child("${FileManager.instance.getFolderImagePath(folder, user.uid)}/${frontTextController.text}");
     if(imageFront != null && showImageFront){
-      File fileFront = File("${FileManager.instance.getFolderImagePath(folder)}\\${frontTextController.text}0");
-      fileFront.writeAsBytes(imageFront!.buffer.asUint8List());  
+      hasFront = true;
+      await imagesRef.child("0.png").putData(imageFront!.buffer.asUint8List()); 
     }
     if(imageBack != null && showImageBack){
-      File fileBack = File("${FileManager.instance.getFolderImagePath(folder)}\\${frontTextController.text}1");
-      fileBack.writeAsBytes(imageBack!.buffer.asUint8List()); 
+      hasBack = true;
+      await imagesRef.child("1.png").putData(imageBack!.buffer.asUint8List());
     }
 
   }
 
-  addCard(){
-    _saveImages();
-    folder.cards.add(CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text));
-    FileManager.instance.saveCards();
+Future<void> addCard() async{
+    await _saveImages();
+    var newCard = CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text, hasBack: hasBack, hasFront: hasFront);
+    if(hasBack) newCard.backCardData = imageBack!.buffer.asUint8List();
+    if(hasFront) newCard.frontCardData = imageFront!.buffer.asUint8List();
+    folder.cards.add(newCard);
+    FileManager.instance.createCardFirestore(folder, newCard,user.uid);
   }
 
 

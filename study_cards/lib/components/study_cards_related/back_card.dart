@@ -34,7 +34,7 @@ class BackCard extends StatelessWidget {
               Expanded(
                 flex: 10,
                 child: DialogImage(
-                    file: controller.backCardFile,
+                    file: controller.cardsToStudy[controller.indexCardShowing].backCardData,
                     text: controller.cardsToStudy[controller.indexCardShowing]
                         .backDescription),
               ),

@@ -1,13 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../controllers/folder_controller.dart';
 import '../../views/study_cards_page.dart';
 
 class CardsToStudy extends StatelessWidget {
   final FolderController folderController;
+  final User user;
 
   const CardsToStudy({
     super.key,
-    required this.folderController,
+    required this.folderController, required this.user
   });
 
   @override
@@ -62,7 +64,8 @@ class CardsToStudy extends StatelessWidget {
                   ? Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => StudyCardsPage(
                           folder: folderController.folder,
-                          cardsToStudy: folderController.cardsToStudy),
+                          cardsToStudy: folderController.cardsToStudy,
+                          user: user,),
                     ))
                   : {},
               child: const Text("Study Cards"),

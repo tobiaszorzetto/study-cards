@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_cards/components/folder_view_related/card_dialog.dart';
 import 'package:study_cards/components/folder_view_related/create_folder_dialog.dart';
@@ -13,18 +14,21 @@ import '../models/card_model.dart';
 
 class FolderPage extends StatefulWidget {
   FolderModel folder;
+  User user;
 
-  FolderPage({required this.folder, super.key});
+  FolderPage({required this.folder, super.key, required this.user});
 
   @override
-  State<FolderPage> createState() => _FolderPageState(folder);
+  State<FolderPage> createState() => _FolderPageState(folder, user);
 }
 
 class _FolderPageState extends State<FolderPage> {
   late FolderController folderController;
 
-  _FolderPageState(folder) {
-    folderController = FolderController(folder);
+  User user;
+
+  _FolderPageState(folder, this.user) {
+    folderController = FolderController(folder, user);
   }
 
   addFolder() {
@@ -44,7 +48,7 @@ class _FolderPageState extends State<FolderPage> {
     setState(() {
       Navigator.of(context).pop();
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => FolderPage(folder: folder),
+        builder: (context) => FolderPage(folder: folder, user: user),
       ));
     });
   }
@@ -54,7 +58,7 @@ class _FolderPageState extends State<FolderPage> {
       Navigator.of(context).pop();
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => AddCardPage(folder: folderController.folder),
+          builder: (context) => AddCardPage(folder: folderController.folder, user: user,),
         ),
       );
     });
@@ -97,24 +101,16 @@ class _FolderPageState extends State<FolderPage> {
               Navigator.of(context).pop();
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) =>
-                    FolderPage(folder: folderController.folder.parentFolder!),
+                    FolderPage(folder: folderController.folder.parentFolder!, user: user,),
               ));
             }
           }),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () => setState(() {
-              FileManager.instance.saveCards();
-            }),
-          ),
-        ],
       ),
       body: SizedBox(
         child: Column(
           children: [
-            CardsToStudy(folderController: folderController),
+            CardsToStudy(folderController: folderController, user: user,),
             const Divider(),
             //const SizedBox(height: 50,),
             SubFolders(
@@ -142,7 +138,6 @@ class _FolderPageState extends State<FolderPage> {
   }
 
   Future<void> _showCardDialog(BuildContext context, CardModel card) async {
-    await folderController.prepareImages(card);
     // ignore: use_build_context_synchronously
     showDialog(
         context: context,

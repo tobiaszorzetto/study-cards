@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +35,7 @@ class CardDialog extends StatelessWidget {
                               height: MediaQuery.of(context).size.height / 2,
                               width: MediaQuery.of(context).size.width / 2,
                               child: _showCardInDialog(
-                                  controller.frontCardExists,
-                                  controller.frontCardFile,
+                                  card.frontCardData,
                                   card,
                                   card.frontDescription),
                             ),
@@ -63,8 +63,7 @@ class CardDialog extends StatelessWidget {
                                 height: MediaQuery.of(context).size.height / 2,
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: _showCardInDialog(
-                                    controller.backCardExists,
-                                    controller.backCardFile,
+                                    card.backCardData,
                                     card,
                                     card.backDescription),
                               ),
@@ -102,12 +101,12 @@ class CardDialog extends StatelessWidget {
   }
 
   Widget _showCardInDialog(
-      bool fileExists, File file, CardModel card, String text) {
-    if (fileExists) {
+      Uint8List? file, CardModel card, String text) {
+    if (file != null) {
       return Column(
         children: [
           Text(text),
-          Expanded(child: Image.file(file)),
+          Expanded(child: Image.memory(file)),
         ],
       );
     }

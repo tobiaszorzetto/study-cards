@@ -4,8 +4,8 @@
 # This file should be version controlled.
 
 version:
-  revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
-  channel: master
+  revision: 9944297138845a94256f1cf37beb88ff9a8e811a
+  channel: stable
 
 project_type: app
 
@@ -13,26 +13,26 @@ project_type: app
 migration:
   platforms:
     - platform: root
-      create_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
-      base_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
+      create_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
+      base_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
     - platform: android
-      create_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
-      base_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
+      create_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
+      base_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
     - platform: ios
-      create_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
-      base_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
+      create_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
+      base_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
     - platform: linux
-      create_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
-      base_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
+      create_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
+      base_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
     - platform: macos
-      create_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
-      base_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
+      create_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
+      base_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
     - platform: web
-      create_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
-      base_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
+      create_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
+      base_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
     - platform: windows
-      create_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
-      base_revision: e9ca9cc146bcee10b020cb74f14cb886cc26c299
+      create_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
+      base_revision: 9944297138845a94256f1cf37beb88ff9a8e811a
 
   # User provided section
 

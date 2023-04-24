@@ -21,7 +21,7 @@ class FrontCard extends StatelessWidget {
               Expanded(
                 flex: 16,
                 child: DialogImage(
-                    file: controller.frontCardFile,
+                    file: controller.cardsToStudy[controller.indexCardShowing].frontCardData,
                     text: controller.cardsToStudy[controller.indexCardShowing]
                         .frontDescription),
               ),

@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import '../file_manager.dart';
 import '../models/card_model.dart';
 import '../models/folder_model.dart';
 
 class StudyCardsController {
+  User user;
+
   int indexCardShowing = 0;
   int maxIndex = 0;
   FolderModel folder;
@@ -16,9 +19,9 @@ class StudyCardsController {
   File? frontCardFile;
   File? backCardFile;
 
-  StudyCardsController(this.folder, this.cardsToStudy) {
+  StudyCardsController(this.folder, this.cardsToStudy, this.user) {
     maxIndex = cardsToStudy.length - 1;
-    folderPath = FileManager.instance.getFolderImagePath(folder);
+    folderPath = FileManager.instance.getFolderImagePath(folder, user.uid);
     setImages();
   }
 
@@ -75,7 +78,6 @@ class StudyCardsController {
 
   void updateCard(Duration duration) {
     cardsToStudy[indexCardShowing].timeToStudy = DateTime.now().add(duration);
-    FileManager.instance.saveCards();
     cardsStudied.add(indexCardShowing);
     nextCard();
   }

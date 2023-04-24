@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_cards/controllers/study_cards_controller.dart';
 import 'package:study_cards/models/card_model.dart';
@@ -8,18 +9,20 @@ import '../models/folder_model.dart';
 class StudyCardsPage extends StatefulWidget {
   FolderModel folder;
   List<CardModel> cardsToStudy;
-  StudyCardsPage({super.key, required this.folder, required this.cardsToStudy});
+  User user;
+  StudyCardsPage({super.key, required this.folder, required this.cardsToStudy, required this.user});
 
   @override
   State<StudyCardsPage> createState() =>
-      _StudyCardsPageState(folder, cardsToStudy);
+      _StudyCardsPageState(folder, cardsToStudy, user);
 }
 
 class _StudyCardsPageState extends State<StudyCardsPage> {
   late StudyCardsController controller;
 
-  _StudyCardsPageState(folder, cardsToStudy) {
-    controller = StudyCardsController(folder, cardsToStudy);
+  User user;
+  _StudyCardsPageState(folder, cardsToStudy, this.user) {
+    controller = StudyCardsController(folder, cardsToStudy, user);
   }
 
   void updateCard(Duration duration) {
@@ -43,7 +46,7 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
           onPressed: () => setState(() {
             Navigator.of(context).pop;
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => FolderPage(folder: controller.folder)));
+                builder: (context) => FolderPage(folder: controller.folder, user: user,)));
           }),
         ),
       ),

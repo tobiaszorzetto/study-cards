@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
 import 'package:study_cards/components/add_card_related/tool_bar.dart';
-
+import 'dart:math' as math;
 import '../../controllers/add_card_controller.dart';
 
 class CardBack extends StatelessWidget {
@@ -19,41 +19,45 @@ class CardBack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: [
-          TextField(
-            controller: controller.backTextController,
-            maxLines: null,
-          ),
-          Visibility(
-            visible: !controller.showImageBack,
-            child: CheckboxListTile(
-                title: const Text("Draw"),
-                value: controller.showImageBack,
-                onChanged: (value) => allowShowingImage(value!)),
-          ),
-          Visibility(
-            visible: controller.showImageBack,
-            child: ToolBar(
-              controller: controller,
-              notifier: controller.notifierBack,
-              allowShowingImage: allowShowingImage,
-              alternateEraser: alternateEraser,
-              changeStroke: changeStroke,
+    return Transform(
+      alignment: Alignment.center,
+      transform: Matrix4.rotationY(math.pi),
+      child: Card(
+        child: Column(
+          children: [
+            TextField(
+              controller: controller.backTextController,
+              maxLines: null,
             ),
-          ),
-          const Divider(),
-          Visibility(
-            visible: controller.showImageBack,
-            child: Expanded(
-              child: Scribble(
+            Visibility(
+              visible: !controller.showImageBack,
+              child: CheckboxListTile(
+                  title: const Text("Draw"),
+                  value: controller.showImageBack,
+                  onChanged: (value) => allowShowingImage(value!)),
+            ),
+            Visibility(
+              visible: controller.showImageBack,
+              child: ToolBar(
+                controller: controller,
                 notifier: controller.notifierBack,
-                drawPen: true,
+                allowShowingImage: allowShowingImage,
+                alternateEraser: alternateEraser,
+                changeStroke: changeStroke,
               ),
             ),
-          ),
-        ],
+            const Divider(),
+            Visibility(
+              visible: controller.showImageBack,
+              child: Expanded(
+                child: Scribble(
+                  notifier: controller.notifierBack,
+                  drawPen: true,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

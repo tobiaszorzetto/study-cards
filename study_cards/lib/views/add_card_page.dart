@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
 import 'package:study_cards/controllers/add_card_controller.dart';
@@ -11,17 +12,19 @@ import '../components/add_card_related/show_card.dart';
 
 class AddCardPage extends StatefulWidget {
   FolderModel folder;
-  AddCardPage({super.key, required this.folder});
+  User user;
+  AddCardPage({super.key, required this.folder, required this.user});
 
   @override
-  State<AddCardPage> createState() => _AddCardPageState(folder);
+  State<AddCardPage> createState() => _AddCardPageState(folder, user);
 }
 
 class _AddCardPageState extends State<AddCardPage>
     with TickerProviderStateMixin {
   late AddCardController controller;
-  _AddCardPageState(folder) {
-    controller = AddCardController(folder);
+  User user;
+  _AddCardPageState(folder, this.user) {
+    controller = AddCardController(folder, user);
   }
 
   @override
@@ -71,14 +74,14 @@ class _AddCardPageState extends State<AddCardPage>
     });
   }
 
-  void _addCard() {
-    setState(() {
+  Future<void> _addCard() async{
+    setState(() async {
       if (controller.frontTextController.text.replaceAll(" ", "") != "") {
-        controller.addCard();
+        await controller.addCard();
         Navigator.of(context).pop();
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => FolderPage(folder: controller.folder),
+            builder: (context) => FolderPage(folder: controller.folder, user: user,),
           ),
         );
       } else {
@@ -98,7 +101,7 @@ class _AddCardPageState extends State<AddCardPage>
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) =>
-                          FolderPage(folder: controller.folder),
+                          FolderPage(folder: controller.folder, user: user,),
                     ),
                   );
                 }),
