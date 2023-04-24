@@ -16,13 +16,11 @@ class StudyCardsController {
   ScrollController scrollController = ScrollController();
   List<int> cardsStudied = [];
   late String folderPath;
-  File? frontCardFile;
-  File? backCardFile;
+  
 
   StudyCardsController(this.folder, this.cardsToStudy, this.user) {
     maxIndex = cardsToStudy.length - 1;
     folderPath = FileManager.instance.getFolderImagePath(folder, user.uid);
-    setImages();
   }
 
   nextCard() async {
@@ -40,20 +38,6 @@ class StudyCardsController {
       if (cardsStudied.contains(indexCardShowing)) {
         nextCard();
       }
-    }
-    await setImages();
-  }
-
-  setImages() async {
-    frontCardFile = File(
-        "$folderPath\\${cardsToStudy[indexCardShowing].frontDescription}0");
-    backCardFile = File(
-        "$folderPath\\${cardsToStudy[indexCardShowing].frontDescription}1");
-    if (!await frontCardFile!.exists()) {
-      frontCardFile = null;
-    }
-    if (!await backCardFile!.exists()) {
-      backCardFile = null;
     }
   }
 
@@ -73,7 +57,6 @@ class StudyCardsController {
         nextCard();
       }
     }
-    await setImages();
   }
 
   void updateCard(Duration duration) {

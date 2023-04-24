@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
@@ -13,11 +14,6 @@ class FolderController{
   
   bool showBack = false;
   FolderModel folder;
-
-  late File frontCardFile;
-  late File backCardFile;
-  late bool frontCardExists;
-  late bool backCardExists;
 
   TextEditingController folderCreateNameController = TextEditingController(text: "");
   bool folderCreateValidated = true;
@@ -81,6 +77,7 @@ class FolderController{
 
   void deleteCard(int cardIndex) {
     _deleteImages(folder.cards[cardIndex], folder);
+    FileManager.instance.deleteCardFirestore(folder, folder.cards[cardIndex], user.uid);
     folder.cards.remove(folder.cards[cardIndex]);
   }
 
@@ -96,7 +93,8 @@ class FolderController{
   }
 
   deleteSubfolder(int subfolderIndex){
-    _deleteFolder(folder.subFolders[subfolderIndex]);
+    //_deleteFolder(folder.subFolders[subfolderIndex]);
+    FileManager.instance.deleteFolderFirestore(folder.subFolders[subfolderIndex], user.uid);
     folder.subFolders.remove(folder.subFolders[subfolderIndex]);
   }
 

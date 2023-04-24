@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,10 +37,10 @@ class AddCardController{
   bool showImageBack = false; 
   bool showImageFront = false; 
 
-  bool highlightFrontText = false;
-
   bool hasFront = false;
   bool hasBack = false;
+
+  bool highlightFrontText = false;
 
   AddCardController(this.folder, this.user);
 
@@ -91,7 +90,5 @@ Future<void> addCard() async{
     folder.cards.add(newCard);
     FileManager.instance.createCardFirestore(folder, newCard,user.uid);
   }
-
-
   
 }

@@ -32,6 +32,18 @@ class FileManager {
 
       folder.cards.add(newCard);
     }
+    for(var cardDocument in cardsCollection.docs){
+      CardModel newCard = CardModel(frontDescription: cardDocument["frontDescription"], backDescription: cardDocument["backDescription"], hasBack: cardDocument["hasBack"], hasFront: cardDocument["hasFront"]);
+      newCard.timeToStudy = DateTime.fromMillisecondsSinceEpoch(cardDocument["timeToStudy"]);
+      var refStr = "${FileManager.instance.getFolderImagePath(folder, uid)}/${newCard.frontDescription}";
+      var frontCardReference = FirebaseStorage.instance.ref("$refStr/0.png");
+      var backCardReference = FirebaseStorage.instance.ref("$refStr/1.png");
+
+      if(newCard.hasFront) newCard.frontCardData = await frontCardReference.getData();
+      if(newCard.hasBack) newCard.backCardData = await backCardReference.getData();
+
+      folder.cards.add(newCard);
+    }
   }
 
   Future<void> updateTimeToStudy(FolderModel folder, CardModel newCard, String uid) async {

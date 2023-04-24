@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'dart:typed_data';
+
 class CardModel {
   String frontDescription;
   String backDescription;

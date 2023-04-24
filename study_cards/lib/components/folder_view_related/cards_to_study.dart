@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:study_cards/models/card_model.dart';
 import '../../controllers/folder_controller.dart';
 import '../../views/study_cards_page.dart';
 
@@ -74,5 +75,15 @@ class CardsToStudy extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  goToStudy(BuildContext context) async {
+
+    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => StudyCardsPage(
+                          folder: folderController.folder,
+                          cardsToStudy: folderController.cardsToStudy,
+                          user: user,),
+                    ));
   }
 }
