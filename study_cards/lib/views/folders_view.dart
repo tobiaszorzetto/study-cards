@@ -1,5 +1,11 @@
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:study_cards/components/folder_view_related/card_dialog.dart';
+import 'package:study_cards/components/folder_view_related/create_folder_dialog.dart';
+import 'package:study_cards/components/folder_view_related/delete_folder_dialog.dart';
+
 import 'package:study_cards/components/folder_view_related/subfolders.dart';
 import 'package:study_cards/controllers/folder_controller.dart';
 import 'package:study_cards/models/folder_model.dart';
@@ -57,6 +63,31 @@ class _FolderPageState extends State<FolderPage> {
     });
   }
 
+  void onCreateFolder(BuildContext context){
+    setState(() {
+      if (!folderController.validateFolder() ||
+          folderController.folderCreateNameController.text
+                  .replaceAll(" ", "") ==
+              "") return;
+      folderController.createFolder();
+      Navigator.of(context).pop();
+    });
+  }
+
+  void onDeleteFolder(int folderIndex, BuildContext context) {
+    setState(() {  
+      Navigator.of(context).pop();
+      folderController.deleteSubfolder(folderIndex);
+    });
+  }
+
+  void onDeleteCard(int cardIndex, BuildContext context) {
+    setState(() {  
+      Navigator.of(context).pop();
+      folderController.deleteCard(cardIndex);
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -89,153 +120,36 @@ class _FolderPageState extends State<FolderPage> {
             CardsToStudy(folderController: folderController),
             const Divider(),
             //const SizedBox(height: 50,),
-            SubFolders(controller: folderController, gotoFolder: gotoFolder, addFolder: addFolder, showDeleteFolderDialog: _showDeleteFolderDialog),
+            SubFolders(
+                controller: folderController,
+                gotoFolder: gotoFolder,
+                addFolder: addFolder,
+                showDeleteFolderDialog: _showDeleteFolderDialog),
             const Divider(),
-            Cards(gotoAddCardPage: gotoAddCardPage, controller: folderController, showDeleteCardDialog: _showDeleteCardDialog, showCardDialog: _showCardDialog),
+            Cards(
+                gotoAddCardPage: gotoAddCardPage,
+                controller: folderController,
+                showDeleteCardDialog: _showDeleteCardDialog,
+                showCardDialog: _showCardDialog),
           ],
         ),
       ),
     );
   }
 
-
-
   _createFolderDialog() {
     return showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-              title: const Text("Folders"),
-              content: StatefulBuilder(
-                builder: (context, setState) => SizedBox(
-                  height: MediaQuery.of(context).size.height / 8,
-                  width: MediaQuery.of(context).size.width / 4,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          onChanged: (value) => setState(() {
-                            folderController.folderCreateNameController.text =
-                                value;
-                            folderController.validateFolder();
-                          }),
-                        ),
-                      ),
-                      Expanded(
-                        child: folderController.folderCreateValidated
-                            ? const SizedBox()
-                            : const Text(
-                                "A folder with this name already exists",
-                                style: TextStyle(color: Colors.red),
-                              ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: () => setState(() {
-                    if (!folderController.validateFolder() ||
-                        folderController.folderCreateNameController.text
-                                .replaceAll(" ", "") ==
-                            "") return;
-                    folderController.createFolder();
-
-                    Navigator.of(context).pop();
-                  }),
-                  child: const Text("Add"),
-                )
-              ],
-            ));
+        builder: (context) => CreateFolderDialog(controller: folderController, onCreateFolder: onCreateFolder)
+        );
   }
 
- 
   Future<void> _showCardDialog(BuildContext context, CardModel card) async {
     // ignore: use_build_context_synchronously
     showDialog(
         context: context,
-        builder: (context) => SizedBox(
-              child: AlertDialog(
-                content: StatefulBuilder(
-                  builder: (context, setState) => SizedBox(
-                    height: 600,
-                    width: 600,
-                    child: SingleChildScrollView(
-                      controller: folderController.scrollController,
-                      child: Column(
-                        children: [
-                          Text(card.frontDescription),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height / 2,
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: _showCardInDialog(
-                                card.frontCardData,
-                                card,
-                                card.frontDescription),
-                          ),
-                          ElevatedButton(
-                              onPressed: () => setState(() {
-                                    folderController.showBack =
-                                        !folderController.showBack;
-                                    if (folderController.showBack) {
-                                      folderController.scrollController
-                                          .animateTo(600,
-                                              duration:
-                                                  const Duration(seconds: 1),
-                                              curve: Curves.ease);
-                                    } else {
-                                      folderController.scrollController
-                                          .animateTo(0,
-                                              duration:
-                                                  const Duration(seconds: 1),
-                                              curve: Curves.ease);
-                                    }
-                                  }),
-                              child: const Text("Show Back")),
-                          Visibility(
-                            visible: folderController.showBack,
-                            child: SizedBox(
-                              height: MediaQuery.of(context).size.height / 2,
-                              width: MediaQuery.of(context).size.width / 2,
-                              child: _showCardInDialog(
-                                  card.backCardData,
-                                  card,
-                                  card.backDescription),
-                            ),
-                          ),
-                          Visibility(
-                            visible: folderController.showBack,
-                            child: Row(
-                              children: [
-                                Slider(
-                                    min: 0,
-                                    max: 3,
-                                    value: folderController.cardDificulty
-                                        .toDouble(),
-                                    onChanged: (value) => setState(
-                                          () {
-                                            folderController.cardDificulty =
-                                                value.toInt();
-                                            folderController.setTimeToStudy();
-                                          },
-                                        )),
-                                Text(folderController.showDificultyLabel()),
-                                Text(folderController.timeToStudy.toString()),
-                                ElevatedButton(
-                                    onPressed: () => setState(() {
-                                          _updateCardsToStudy(card);
-                                        }),
-                                    child: const Text("OK"))
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ));
+        builder: (context) => CardDialog(controller: folderController, card: card, updateCardsToStudy: _updateCardsToStudy),
+    );
   }
 
   void _updateCardsToStudy(CardModel card) {
@@ -243,64 +157,18 @@ class _FolderPageState extends State<FolderPage> {
       folderController.createTimeToStudy(card);
     });
   }
-
-
-
-  Widget _showCardInDialog( Uint8List? file, CardModel card, String text) {
-    if (file!=null) {
-      return Column(
-        children: [
-          Text(text),
-          Expanded(child: Image.memory(file)),
-        ],
-      );
-    }
-    return Text(text);
-  }
-
+  
   _showDeleteCardDialog(int cardIndex) {
     showDialog(
         context: context,
-        builder: (context) => SizedBox(
-              child: AlertDialog(
-                content: StatefulBuilder(
-                    builder: (context, setState) =>
-                        const Text("Do you want to delete this card?")),
-                actions: [
-                  ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("Cancel")),
-                  ElevatedButton(
-                      onPressed: () => setState(() {
-                            Navigator.of(context).pop();
-                            folderController.deleteCard(cardIndex);
-                          }),
-                      child: const Text("OK")),
-                ],
-              ),
-            ));
+        builder: (context) => DeleteObjectDialog(index: cardIndex, folderController: folderController, onDeleteObject: onDeleteCard, objName: "card",)
+      );
   }
 
   _showDeleteFolderDialog(int folderIndex) {
     showDialog(
         context: context,
-        builder: (context) => SizedBox(
-              child: AlertDialog(
-                content: StatefulBuilder(
-                    builder: (context, setState) =>
-                        const Text("Do you want to delete this folder?")),
-                actions: [
-                  ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("Cancel")),
-                  ElevatedButton(
-                      onPressed: () => setState(() {
-                            Navigator.of(context).pop();
-                            folderController.deleteSubfolder(folderIndex);
-                          }),
-                      child: const Text("OK")),
-                ],
-              ),
-            ));
+        builder: (context) => DeleteObjectDialog(index: folderIndex, folderController: folderController, onDeleteObject: onDeleteFolder, objName: "folder",)
+      );
   }
 }
