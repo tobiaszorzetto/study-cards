@@ -159,7 +159,7 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
             onPressed: () => setState(() {
                   controller.cardsToStudy[controller.indexCardShowing]
                       .timeToStudy = DateTime.now().add(duration);
-                  FileManager.instance.saveCards();
+                  FileManager.instance.updateTimeToStudy(controller.folder, controller.cardsToStudy[controller.indexCardShowing]);
                   controller.cardsStudied.add(controller.indexCardShowing);
                   controller.nextCard();
                 }),

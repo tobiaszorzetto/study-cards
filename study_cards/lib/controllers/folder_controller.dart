@@ -40,7 +40,6 @@ class FolderController{
     folder.subFolders.add(newSubFolder);
     Directory(FileManager.instance.getFolderImagePath(newSubFolder)).create();
     FileManager.instance.createFolderFirestore(newSubFolder);
-    FileManager.instance.saveCards();
     folderCreateNameController.text = "";
     folderCreateValidated = true;
   }
@@ -56,7 +55,6 @@ class FolderController{
 
   void createTimeToStudy(CardModel card){
       card.timeToStudy = DateTime.now().add(timeToStudy);
-      FileManager.instance.saveCards();
       setCardsToStudy();
   }
   
@@ -78,8 +76,6 @@ class FolderController{
     _deleteImages(folder.cards[cardIndex], folder);
     FileManager.instance.deleteCardFirestore(folder, folder.cards[cardIndex]);
     folder.cards.remove(folder.cards[cardIndex]);
-
-    FileManager.instance.saveCards();
   }
 
   Future<void> _deleteFolder(FolderModel folderDeleted) async{
@@ -96,7 +92,6 @@ class FolderController{
     //_deleteFolder(folder.subFolders[subfolderIndex]);
     FileManager.instance.deleteFolderFirestore(folder.subFolders[subfolderIndex]);
     folder.subFolders.remove(folder.subFolders[subfolderIndex]);
-    FileManager.instance.saveCards();
   }
 
   // SHOW

@@ -11,11 +11,6 @@ class FileManager {
 
   static FileManager instance = FileManager();
 
-  Future<String> getPath() async{
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
-
   Future<void> loadFromFirestone(String path, FolderModel folder) async{
     var subFoldersCollection = await FirebaseFirestore.instance.collection("$path/subfolders").orderBy("name").get();
     var cardsCollection = await FirebaseFirestore.instance.collection("$path/cards").orderBy("frontDescription").get();
@@ -26,16 +21,25 @@ class FileManager {
       loadFromFirestone(subfolderDocument.reference.path, newFolder);
     }
     for(var cardDocument in cardsCollection.docs){
-      CardModel newCard = CardModel(frontDescription: cardDocument["frontDescription"], backDescription: cardDocument["backDescription"]);
+      CardModel newCard = CardModel(frontDescription: cardDocument["frontDescription"], backDescription: cardDocument["backDescription"], hasBack: cardDocument["hasBack"], hasFront: cardDocument["hasFront"]);
       newCard.timeToStudy = DateTime.fromMillisecondsSinceEpoch(cardDocument["timeToStudy"]);
       var refStr = "${FileManager.instance.getFolderImagePath(folder)}/${newCard.frontDescription}";
       var frontCardReference = FirebaseStorage.instance.ref("$refStr/0.png");
       var backCardReference = FirebaseStorage.instance.ref("$refStr/1.png");
-      newCard.frontCardData = await frontCardReference.getData();
-      newCard.backCardData = await backCardReference.getData();
+
+      if(newCard.hasFront) newCard.frontCardData = await frontCardReference.getData();
+      if(newCard.hasBack) newCard.backCardData = await backCardReference.getData();
 
       folder.cards.add(newCard);
     }
+  }
+
+  Future<void> updateTimeToStudy(FolderModel folder, CardModel newCard) async {
+    String path = getSubfoldersFirestorePath(folder).substring(0,getSubfoldersFirestorePath(folder).length - 10);
+    var collection = FirebaseFirestore.instance.collection("${path}cards");
+    collection.doc(newCard.frontDescription).update({
+      "timeToStudy": newCard.timeToStudy.millisecondsSinceEpoch,
+    });
   }
 
   Future<void> createCardFirestore(FolderModel folder, CardModel newCard) async {
@@ -45,6 +49,8 @@ class FileManager {
       "frontDescription": newCard.frontDescription,
       "backDescription": newCard.backDescription,
       "timeToStudy": newCard.timeToStudy.millisecondsSinceEpoch,
+      "hasBack": newCard.hasBack,
+      "hasFront": newCard.hasFront,
     });
   }
 
@@ -88,29 +94,6 @@ class FileManager {
       deleteFolderFirestore(subfolder);
     }
     await FirebaseFirestore.instance.doc(path).delete();
-  }
-
-  Future<void> saveCards() async {
-    final path = await getPath(); 
-    final file = File("$path\\study-cards");
-    var jsonFolder = FolderModel.instance.toJson();
-    var jsonCards = jsonEncode(jsonFolder);
-    await file.writeAsString(jsonCards);
-  }
-
-  Future<void> loadCards() async{
-    final path = await getPath();
-    final file = File("$path\\study-cards");
-    if(await file.exists()){
-      try {
-        String fileContent = await file.readAsString();
-        var cardsMap = jsonDecode(fileContent);
-        FolderModel.instance = FolderModel.fromJson(cardsMap, null);
-        
-      } catch (e) {
-        print(e);
-      }
-    }
   }
 
   String getFolderImagePath(FolderModel? folder){

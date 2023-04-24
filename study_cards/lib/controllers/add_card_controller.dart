@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scribble/scribble.dart';
 
@@ -34,6 +33,9 @@ class AddCardController{
 
   bool showImageBack = false; 
   bool showImageFront = false; 
+
+  bool hasFront = false;
+  bool hasBack = false;
 
   bool highlightFrontText = false;
 
@@ -67,22 +69,23 @@ class AddCardController{
     var storageRef = FirebaseStorage.instance.ref();
     var imagesRef = storageRef.child("${FileManager.instance.getFolderImagePath(folder)}/${frontTextController.text}");
     if(imageFront != null && showImageFront){
+      hasFront = true;
       await imagesRef.child("0.png").putData(imageFront!.buffer.asUint8List()); 
     }
     if(imageBack != null && showImageBack){
+      hasBack = true;
       await imagesRef.child("1.png").putData(imageBack!.buffer.asUint8List());
     }
 
   }
 
-  addCard(){
-    _saveImages();
-    var newCard = CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text);
-    newCard.backCardData = imageBack!.buffer.asUint8List();
-    newCard.frontCardData = imageFront!.buffer.asUint8List();
+  addCard() async{
+    await _saveImages();
+    var newCard = CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text, hasBack: hasBack, hasFront: hasFront);
+    if(hasBack) newCard.backCardData = imageBack!.buffer.asUint8List();
+    if(hasFront) newCard.frontCardData = imageFront!.buffer.asUint8List();
     folder.cards.add(newCard);
     FileManager.instance.createCardFirestore(folder, newCard);
-    FileManager.instance.saveCards();
   }
   
 }
