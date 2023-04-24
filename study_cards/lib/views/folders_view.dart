@@ -1,10 +1,13 @@
+
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:study_cards/components/folder_view_related/card_dialog.dart';
 import 'package:study_cards/components/folder_view_related/create_folder_dialog.dart';
 import 'package:study_cards/components/folder_view_related/delete_folder_dialog.dart';
+
 import 'package:study_cards/components/folder_view_related/subfolders.dart';
 import 'package:study_cards/controllers/folder_controller.dart';
-import 'package:study_cards/file_manager.dart';
 import 'package:study_cards/models/folder_model.dart';
 import 'package:study_cards/views/add_card_page.dart';
 import '../components/folder_view_related/cards.dart';
@@ -105,9 +108,9 @@ class _FolderPageState extends State<FolderPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
-            onPressed: () => setState(() {
-              FileManager.instance.saveCards();
-            }),
+            onPressed: () async {
+              
+            },
           ),
         ],
       ),
@@ -142,7 +145,6 @@ class _FolderPageState extends State<FolderPage> {
   }
 
   Future<void> _showCardDialog(BuildContext context, CardModel card) async {
-    await folderController.prepareImages(card);
     // ignore: use_build_context_synchronously
     showDialog(
         context: context,
@@ -155,7 +157,7 @@ class _FolderPageState extends State<FolderPage> {
       folderController.createTimeToStudy(card);
     });
   }
-
+  
   _showDeleteCardDialog(int cardIndex) {
     showDialog(
         context: context,

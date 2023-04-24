@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import '../file_manager.dart';
 import '../models/card_model.dart';
@@ -13,13 +12,11 @@ class StudyCardsController {
   ScrollController scrollController = ScrollController();
   List<int> cardsStudied = [];
   late String folderPath;
-  File? frontCardFile;
-  File? backCardFile;
+  
 
   StudyCardsController(this.folder, this.cardsToStudy) {
     maxIndex = cardsToStudy.length - 1;
     folderPath = FileManager.instance.getFolderImagePath(folder);
-    setImages();
   }
 
   nextCard() async {
@@ -37,20 +34,6 @@ class StudyCardsController {
       if (cardsStudied.contains(indexCardShowing)) {
         nextCard();
       }
-    }
-    await setImages();
-  }
-
-  setImages() async {
-    frontCardFile = File(
-        "$folderPath\\${cardsToStudy[indexCardShowing].frontDescription}0");
-    backCardFile = File(
-        "$folderPath\\${cardsToStudy[indexCardShowing].frontDescription}1");
-    if (!await frontCardFile!.exists()) {
-      frontCardFile = null;
-    }
-    if (!await backCardFile!.exists()) {
-      backCardFile = null;
     }
   }
 
@@ -70,12 +53,10 @@ class StudyCardsController {
         nextCard();
       }
     }
-    await setImages();
   }
 
   void updateCard(Duration duration) {
     cardsToStudy[indexCardShowing].timeToStudy = DateTime.now().add(duration);
-    FileManager.instance.saveCards();
     cardsStudied.add(indexCardShowing);
     nextCard();
   }

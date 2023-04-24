@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 
@@ -10,11 +11,6 @@ class FolderController{
 
   bool showBack = false;
   FolderModel folder;
-
-  late File frontCardFile;
-  late File backCardFile;
-  late bool frontCardExists;
-  late bool backCardExists;
 
   TextEditingController folderCreateNameController = TextEditingController(text: "");
   bool folderCreateValidated = true;
@@ -43,7 +39,7 @@ class FolderController{
     FolderModel newSubFolder = FolderModel(name: folderCreateNameController.text, parentFolder: folder);
     folder.subFolders.add(newSubFolder);
     Directory(FileManager.instance.getFolderImagePath(newSubFolder)).create();
-    FileManager.instance.saveCards();
+    FileManager.instance.createFolderFirestore(newSubFolder);
     folderCreateNameController.text = "";
     folderCreateValidated = true;
   }
@@ -59,7 +55,6 @@ class FolderController{
 
   void createTimeToStudy(CardModel card){
       card.timeToStudy = DateTime.now().add(timeToStudy);
-      FileManager.instance.saveCards();
       setCardsToStudy();
   }
   
@@ -79,8 +74,8 @@ class FolderController{
 
   void deleteCard(int cardIndex) {
     _deleteImages(folder.cards[cardIndex], folder);
+    FileManager.instance.deleteCardFirestore(folder, folder.cards[cardIndex]);
     folder.cards.remove(folder.cards[cardIndex]);
-    FileManager.instance.saveCards();
   }
 
   Future<void> _deleteFolder(FolderModel folderDeleted) async{
@@ -91,13 +86,12 @@ class FolderController{
       await _deleteImages(card, folderDeleted);
     }
     await Directory(FileManager.instance.getFolderImagePath(folderDeleted)).delete();
-
   }
 
   deleteSubfolder(int subfolderIndex){
-    _deleteFolder(folder.subFolders[subfolderIndex]);
+    //_deleteFolder(folder.subFolders[subfolderIndex]);
+    FileManager.instance.deleteFolderFirestore(folder.subFolders[subfolderIndex]);
     folder.subFolders.remove(folder.subFolders[subfolderIndex]);
-    FileManager.instance.saveCards();
   }
 
   // SHOW
@@ -111,14 +105,6 @@ class FolderController{
       return "Hard";
     }
     return "Try Again";
-  }
-
-  Future<void> prepareImages(CardModel card) async {
-    String folderPath = FileManager.instance.getFolderImagePath(folder);
-    frontCardFile = File("$folderPath\\${card.frontDescription}0");
-    frontCardExists = await frontCardFile.exists(); 
-    backCardFile = File("$folderPath\\${card.frontDescription}1");
-    backCardExists = await backCardFile.exists(); 
   }
 
   void setTimeToStudy(){
