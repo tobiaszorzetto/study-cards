@@ -18,31 +18,43 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(children: [
-          TextField(
-            controller: emailController,
-            decoration: const InputDecoration(labelText: "email"),
+        child: Container(
+          width: MediaQuery.of(context).size.width/4,
+          height: MediaQuery.of(context).size.height/2,
+          child: Card(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+              Expanded(child: Image.asset("assets/images/logo.png")),
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: "email"),
+              ),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: "password"),
+              ),
+              SizedBox(height: 50,),
+              ElevatedButton(
+                  onPressed: () => setState(() {
+                        signIn();
+                      }),
+                  child: Text("Sign in")),
+              ElevatedButton(
+                  onPressed: () => setState(() {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => CreateAccount(),
+                          ),
+                        );
+                      }),
+                  child: Text("Create account")),
+            ]),
           ),
-          TextField(
-            controller: passwordController,
-            decoration: const InputDecoration(labelText: "password"),
-          ),
-          ElevatedButton(
-              onPressed: () => setState(() {
-                    signIn();
-                  }),
-              child: Text("Sign in")),
-          ElevatedButton(
-              onPressed: () => setState(() {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => CreateAccount(),
-                      ),
-                    );
-                  }),
-              child: Text("Create account")),
-        ]),
+        ),
       ),
     );
   }
