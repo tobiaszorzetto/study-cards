@@ -41,7 +41,6 @@ class FolderController{
   void createFolder(){
     FolderModel newSubFolder = FolderModel(name: folderCreateNameController.text, parentFolder: folder);
     folder.subFolders.add(newSubFolder);
-    Directory(FileManager.instance.getFolderImagePath(newSubFolder, user.uid)).create();
     FileManager.instance.createFolderFirestore(newSubFolder, user.uid);
     folderCreateNameController.text = "";
     folderCreateValidated = true;

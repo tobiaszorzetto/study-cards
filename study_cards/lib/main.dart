@@ -19,7 +19,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LoginPage(),
-      theme: ThemeData.dark(),
+      theme: ThemeData.light(),
     );
   }
 }

@@ -32,18 +32,6 @@ class FileManager {
 
       folder.cards.add(newCard);
     }
-    for(var cardDocument in cardsCollection.docs){
-      CardModel newCard = CardModel(frontDescription: cardDocument["frontDescription"], backDescription: cardDocument["backDescription"], hasBack: cardDocument["hasBack"], hasFront: cardDocument["hasFront"]);
-      newCard.timeToStudy = DateTime.fromMillisecondsSinceEpoch(cardDocument["timeToStudy"]);
-      var refStr = "${FileManager.instance.getFolderImagePath(folder, uid)}/${newCard.frontDescription}";
-      var frontCardReference = FirebaseStorage.instance.ref("$refStr/0.png");
-      var backCardReference = FirebaseStorage.instance.ref("$refStr/1.png");
-
-      if(newCard.hasFront) newCard.frontCardData = await frontCardReference.getData();
-      if(newCard.hasBack) newCard.backCardData = await backCardReference.getData();
-
-      folder.cards.add(newCard);
-    }
   }
 
   Future<void> updateTimeToStudy(FolderModel folder, CardModel newCard, String uid) async {
@@ -67,9 +55,9 @@ class FileManager {
   }
 
   Future<void> createFolderFirestore(FolderModel folder, String uid) async {
-    String path = getCardsFirestorePath(folder.parentFolder, uid);
+    String path = getSubfoldersFirestorePath(folder.parentFolder, uid);
     var collection = FirebaseFirestore.instance.collection(path);
-    collection.doc(folder.name).set({
+    await collection.doc(folder.name).set({
       "name": folder.name,
     });
   }
@@ -85,7 +73,7 @@ class FileManager {
     if(folder == null){
       return uid;
     } else{
-      return "${getSubfoldersFirestorePath(folder.parentFolder, uid)}/${folder.name}/subfolders";
+      return "${getSubfoldersFirestorePath(folder.parentFolder, uid)}/${folder.name}/cards";
     }
   }
 
