@@ -12,7 +12,7 @@ class ChangeCardSideButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
         onPressed: () {
-          controller.changeCardSide();
+          controller.changeCardSide(context);
         },
         icon: const Icon(Icons.change_circle_outlined),
         label: controller.animationStatus == AnimationStatus.dismissed

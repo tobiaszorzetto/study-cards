@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_painter/flutter_painter.dart';
 import 'package:scribble/scribble.dart';
 import 'package:study_cards/components/add_card_related/tool_bar.dart';
 import 'dart:math' as math;
@@ -6,8 +7,8 @@ import '../../controllers/add_card_controller.dart';
 
 class CardBack extends StatelessWidget {
   void Function(bool) allowShowingImage;
-  void Function(double, ScribbleNotifier) changeStroke;
-  void Function(ScribbleNotifier) alternateEraser;
+  void Function(double, PainterController) changeStroke;
+  void Function(PainterController) alternateEraser;
   AddCardController controller;
   CardBack({
     super.key,
@@ -40,7 +41,7 @@ class CardBack extends StatelessWidget {
               visible: controller.showImageBack,
               child: ToolBar(
                 controller: controller,
-                notifier: controller.notifierBack,
+                painterController: controller.backPainterController,
                 allowShowingImage: allowShowingImage,
                 alternateEraser: alternateEraser,
                 changeStroke: changeStroke,
@@ -50,10 +51,11 @@ class CardBack extends StatelessWidget {
             Visibility(
               visible: controller.showImageBack,
               child: Expanded(
-                child: Scribble(
-                  notifier: controller.notifierBack,
-                  drawPen: true,
-                ),
+                child: FlutterPainter.builder(
+                    controller: controller.backPainterController,
+                    builder: (context, painter) {
+                      return SizedBox(child: painter);
+                    })
               ),
             ),
           ],

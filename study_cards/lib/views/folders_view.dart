@@ -106,6 +106,13 @@ class _FolderPageState extends State<FolderPage> {
             }
           }),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              
+            }, 
+            icon: Icon(Icons.settings))
+        ],
       ),
       body: SizedBox(
         child: Column(

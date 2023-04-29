@@ -1,9 +1,10 @@
 import 'dart:typed_data';
-
+import 'dart:ui' as ui;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_painter/flutter_painter.dart';
 import 'package:scribble/scribble.dart';
 
 import '../file_manager.dart';
@@ -13,8 +14,6 @@ import '../models/folder_model.dart';
 class AddCardController{
   User user;
 
-  late ScribbleNotifier notifierFront;
-  late ScribbleNotifier notifierBack;
   TextEditingController frontTextController = TextEditingController();
   TextEditingController backTextController = TextEditingController();
   double stroke = 1;
@@ -31,8 +30,8 @@ class AddCardController{
 
   FolderModel folder;
 
-  ByteData? imageFront;
-  ByteData? imageBack;
+  Uint8List? imageFront;
+  Uint8List? imageBack;
 
   bool showImageBack = false; 
   bool showImageFront = false; 
@@ -42,10 +41,19 @@ class AddCardController{
 
   bool highlightFrontText = false;
 
-  AddCardController(this.folder, this.user);
+  PainterController frontPainterController = PainterController();
+  PainterController backPainterController = PainterController();
 
-  void changeCardSide(){
-    updateImage();
+  AddCardController(this.folder, this.user){
+    frontPainterController.freeStyleMode = FreeStyleMode.draw;
+    stroke = frontPainterController.freeStyleStrokeWidth;
+    backPainterController.freeStyleMode = FreeStyleMode.draw;
+    stroke = backPainterController.freeStyleStrokeWidth;
+
+  }
+
+  void changeCardSide(BuildContext context){
+    updateImage(context);
     if (animationStatus == AnimationStatus.dismissed) {
       showFrontSide = false;
       animationController.forward();
@@ -55,20 +63,20 @@ class AddCardController{
     }
   }
 
-  Future<void> updateImage() async{
+  Future<void> updateImage(BuildContext context) async{
     if (animationStatus == AnimationStatus.dismissed) {
       if(showImageFront){
-        imageFront = await notifierFront.renderImage();   
+        imageFront = await frontPainterController.renderImage(Size(MediaQuery.of(context).size.width / 2, MediaQuery.of(context).size.height / 2)).then<Uint8List?>((ui.Image image) => image.pngBytes);   
       }
     } else {
       if(showImageBack){
-        imageBack = await notifierBack.renderImage();   
+        imageBack = await backPainterController.renderImage(Size(MediaQuery.of(context).size.width / 2, MediaQuery.of(context).size.height / 2)).then<Uint8List?>((ui.Image image) => image.pngBytes);    
       }
     }
   }
 
- Future<void> _saveImages() async {
-    await updateImage();
+ Future<void> _saveImages(BuildContext context) async {
+    await updateImage(context);
     var storageRef = FirebaseStorage.instance.ref();
     var imagesRef = storageRef.child("${FileManager.instance.getFolderImagePath(folder, user.uid)}/${frontTextController.text}");
     if(imageFront != null && showImageFront){
@@ -82,8 +90,8 @@ class AddCardController{
 
   }
 
-Future<void> addCard() async{
-    await _saveImages();
+Future<void> addCard(BuildContext context) async{
+    await _saveImages(context);
     var newCard = CardModel(frontDescription: frontTextController.text, backDescription: backTextController.text, hasBack: hasBack, hasFront: hasFront);
     if(hasBack) newCard.backCardData = imageBack!.buffer.asUint8List();
     if(hasFront) newCard.frontCardData = imageFront!.buffer.asUint8List();

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_painter/flutter_painter.dart';
 import 'package:scribble/scribble.dart';
 import 'package:study_cards/controllers/add_card_controller.dart';
 import 'package:study_cards/models/folder_model.dart';
@@ -29,8 +30,6 @@ class _AddCardPageState extends State<AddCardPage>
 
   @override
   void initState() {
-    controller.notifierFront = ScribbleNotifier();
-    controller.notifierBack = ScribbleNotifier();
     controller.animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -55,29 +54,29 @@ class _AddCardPageState extends State<AddCardPage>
     });
   }
 
-  void _alternateEraser(ScribbleNotifier notifier) {
+  void _alternateEraser(PainterController painterController) {
     setState(() {
       if (controller.eraseSelected) {
         controller.eraseSelected = false;
-        notifier.setColor(Colors.black);
+        painterController.freeStyleMode = FreeStyleMode.draw;
       } else {
         controller.eraseSelected = true;
-        notifier.setEraser();
+        painterController.freeStyleMode = FreeStyleMode.erase;
       }
     });
   }
 
-  void _changeStroke(double value, ScribbleNotifier notifier) {
+  void _changeStroke(double value, PainterController painterController) {
     setState(() {
       controller.stroke = value;
-      notifier.setStrokeWidth(controller.stroke);
+      painterController.freeStyleStrokeWidth = controller.stroke;
     });
   }
 
   Future<void> _addCard() async{
     setState(() async {
       if (controller.frontTextController.text.replaceAll(" ", "") != "") {
-        await controller.addCard();
+        await controller.addCard(context);
         Navigator.of(context).pop();
         Navigator.of(context).push(
           MaterialPageRoute(

@@ -4,6 +4,7 @@ import 'package:study_cards/file_manager.dart';
 import 'package:study_cards/firebase_options.dart';
 import 'package:study_cards/views/folders_view.dart';
 import 'package:study_cards/views/login_page.dart';
+import 'package:study_cards/views/settings_page.dart';
 import 'models/folder_model.dart';
 
 void main() async {
@@ -19,7 +20,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LoginPage(),
-      theme: ThemeData.light(),
+      theme: ThemeData.dark(),
     );
   }
 }

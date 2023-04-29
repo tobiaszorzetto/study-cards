@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_painter/flutter_painter.dart';
 import 'package:scribble/scribble.dart';
 import 'package:study_cards/components/add_card_related/tool_bar.dart';
 
@@ -6,8 +7,8 @@ import '../../controllers/add_card_controller.dart';
 
 class CardFront extends StatelessWidget {
   void Function(bool) allowShowingImage;
-  void Function(double, ScribbleNotifier) changeStroke;
-  void Function(ScribbleNotifier) alternateEraser;
+  void Function(double, PainterController) changeStroke;
+  void Function(PainterController) alternateEraser;
   AddCardController controller;
   CardFront({
     super.key,
@@ -45,14 +46,13 @@ class CardFront extends StatelessWidget {
             child: CheckboxListTile(
                 title: const Text("Draw"),
                 value: controller.showImageFront,
-                onChanged: (value) => allowShowingImage(value!)
-            ),
+                onChanged: (value) => allowShowingImage(value!)),
           ),
           Visibility(
             visible: controller.showImageFront,
             child: ToolBar(
               controller: controller,
-              notifier: controller.notifierFront,
+              painterController: controller.frontPainterController,
               allowShowingImage: allowShowingImage,
               alternateEraser: alternateEraser,
               changeStroke: changeStroke,
@@ -62,11 +62,11 @@ class CardFront extends StatelessWidget {
           Visibility(
             visible: controller.showImageFront,
             child: Expanded(
-              child: Scribble(
-                notifier: controller.notifierFront,
-                drawPen: true,
-              ),
-            ),
+                child: FlutterPainter.builder(
+                    controller: controller.frontPainterController,
+                    builder: (context, painter) {
+                      return SizedBox(child: painter);
+                    })),
           ),
         ],
       ),

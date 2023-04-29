@@ -24,101 +24,111 @@ class _LoginPageState extends State<LoginPage> {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [Colors.blue, Colors.black])),
-        child: Center(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width / 4,
-            height: MediaQuery.of(context).size.height / 2,
-            child: Card(
-              elevation: 0,
-              color: Colors.transparent,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(child: Image.asset("assets/images/logo.png")),
-                    TextFormField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        hintText: "email",
-                        enabledBorder: OutlineInputBorder(),
-                        border: OutlineInputBorder(),
-                        icon: Icon(Icons.email),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                          hintText: "password",
-                          border: OutlineInputBorder(),
-                          icon: Icon(Icons.password),
-                          filled: true,
-                          fillColor: Colors.white),
-                    ),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                                  backgroundColor: const Color(0xFF2697FF),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 14.0, horizontal: 80),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12.0))),
-                        onPressed: () => setState(() {
-                              signIn();
-                            }),
-                        child: const Text(
-                                "Login",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                        ),
-                    ),
-                    TextButton.icon(
-                      icon: Image.asset("assets/images/google_logo.webp",scale: 20,),
-                      style: TextButton.styleFrom(
-                                  backgroundColor: const Color(0xFF2697FF),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 14.0, horizontal: 80),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12.0))),
-                        onPressed: () => setState(() {
-                              signInWithGoogle(context: context);
-                            }),
-                        label: const Text(
-                                "Sign in with google",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                        ),
-                    ),
-                    TextButton(
-                        onPressed: () => setState(() {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => CreateAccount(),
-                                ),
-                              );
-                            }),
-                        child: const Text("Create account", style: TextStyle(color: Colors.white),)),
-                  ]),
+        child: Row(
+          children: [
+            Expanded(child: SizedBox()),
+            Expanded
+            (
+              child: Center(
+                
+                child: SizedBox(
+                  //width: MediaQuery.of(context).size.width / 4,
+                  //height: MediaQuery.of(context).size.height / 2,
+                  child: Card(
+                    elevation: 0,
+                    color: Colors.transparent,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(child: Image.asset("assets/images/logo.png")),
+                          TextFormField(
+                            controller: emailController,
+                            decoration: const InputDecoration(
+                              hintText: "email",
+                              enabledBorder: OutlineInputBorder(),
+                              border: OutlineInputBorder(),
+                              icon: Icon(Icons.email),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          TextField(
+                            controller: passwordController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                                hintText: "password",
+                                border: OutlineInputBorder(),
+                                icon: Icon(Icons.password),
+                                filled: true,
+                                fillColor: Colors.white),
+                          ),
+                          const SizedBox(
+                            height: 50,
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                                        backgroundColor: const Color(0xFF2697FF),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 14.0, horizontal: 80),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.0))),
+                              onPressed: () => setState(() {
+                                    signIn();
+                                  }),
+                              child: const Text(
+                                      "Login",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        letterSpacing: 0.5,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                              ),
+                          ),
+                          TextButton.icon(
+                            icon: Image.asset("assets/images/google_logo.webp",scale: 20,),
+                            style: TextButton.styleFrom(
+                                        backgroundColor: const Color(0xFF2697FF),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 14.0, horizontal: 80),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.0))),
+                              onPressed: () => setState(() {
+                                    signInWithGoogle(context: context);
+                                  }),
+                              label: const Text(
+                                      "Sign in with google",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        letterSpacing: 0.5,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                              ),
+                          ),
+                          TextButton(
+                              onPressed: () => setState(() {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => CreateAccount(),
+                                      ),
+                                    );
+                                  }),
+                              child: const Text("Create account", style: TextStyle(color: Colors.white),)),
+                        ]),
+                  ),
+                ),
+              ),
             ),
-          ),
+            Expanded(child: SizedBox()),
+          ],
         ),
       ),
     );

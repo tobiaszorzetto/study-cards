@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_painter/flutter_painter.dart';
 import 'package:scribble/scribble.dart';
 import '../../controllers/add_card_controller.dart';
 import 'card_back.dart';
@@ -9,8 +10,8 @@ import 'card_front.dart';
 class ShowCard extends StatelessWidget {
   AddCardController controller;
   void Function(bool) allowShowingImage;
-  void Function(double, ScribbleNotifier) changeStroke;
-  void Function(ScribbleNotifier) alternateEraser;
+  void Function(double, PainterController) changeStroke;
+  void Function(PainterController) alternateEraser;
   ShowCard(
       {super.key,
       required this.controller,
